@@ -1,0 +1,47 @@
+# .cursorrules - Code rules and editor settings for SiteWatcher project
+
+[General]
+# General rules for the repository
+IndentStyle = Space
+IndentSize = 2
+TabWidth = 2
+LineEnding = LF
+Encoding = UTF-8
+MaxLineLength = 120
+
+[Frontend]
+# Rules specific to frontend development
+Language = JavaScript, HTML, CSS
+Framework = None (VanillaJS)
+PackageManager = npm
+LintingTool = ESLint
+FormattingTool = Prettier
+
+[Backend]
+# Rules specific to backend development
+Language = JavaScript (Node.js)
+Runtime = AWS Lambda
+PackageManager = npm
+IaC = AWS CloudFormation (or SAM)
+
+[Docker]
+# Rules specific to Docker usage
+ComposeVersion = 3.8
+BaseImage = node:18
+DockerfileLintingTool = hadolint
+
+[Git]
+# Git-related rules
+BranchNamingConvention = feature/issue-{id}-{short-description}
+CommitMessageConvention = type(scope): description
+IgnoreFiles = 
+  node_modules/
+  .env
+  .vscode/
+
+[CI/CD]
+# Rules for continuous integration and deployment
+CI = GitHub Actions
+TestFramework = Jest
+CodeCoverageTool = nyc
+BuildAutomationTool = npm scripts
