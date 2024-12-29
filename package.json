@@ -1,0 +1,23 @@
+{
+  "name": "sitewathcer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "lite-server --port 3000"
+  },
+  "devDependencies": {
+    "lite-server": "^2.5.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/centervil/SiteWathcer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/centervil/SiteWathcer/issues"
+  },
+  "homepage": "https://github.com/centervil/SiteWathcer#readme"
+}
