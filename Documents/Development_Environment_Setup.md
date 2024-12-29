@@ -31,7 +31,7 @@
 1. **Ubuntuにログイン**し、以下を実行：
    ```bash
    sudo apt update && sudo apt upgrade -y
-   sudo apt install -y git curl unzip
+   sudo apt install -y git curl unzip npm
    ```
 
 ---
@@ -98,19 +98,43 @@ docker-compose --version
        tty: true
    ```
 
-4. **Dockerイメージのビルド**
+5. **`package.json`の生成**
+   ```bash
+   npm init -y
+   ```
+
+6. **`package.json`にlite-serverのインストールを追記**
+   ```bash
+   npm install lite-server --save-dev
+   ```
+7. **`scripts`セクションの更新**
+   `package.json`の`scripts`セクションに以下を追加：
+   ```json
+   "scripts": {
+       "start": "lite-server"
+   }
+   ```
+8. **ルートフォルダにサンプルHTMLファイルの作成**
+   ```html
+   <!DOCTYPE html><html><head><title>SiteWatcher</title></head><body><h1>Welcome to SiteWatcher!</h1></body></html>
+   ```
+
+9. **Dockerイメージのビルド**
+   ```bash
+   docker compose build
+   ```
    ```bash
    docker compose build
    ```
 
-5. **Dockerコンテナの起動**
+10. **Dockerコンテナの起動**
    ```bash
    docker compose up -d
    ```
 
-6. **Dockerコンテナに入る**
+11. **Dockerコンテナに入る**
    ```bash
-   docker exec -it sitewatcher_frontend_1 bash
+   docker exec -it sitewatcher-frontend-1 bash
    ```
 
 ---
@@ -118,32 +142,7 @@ docker-compose --version
 ## **ステップ 4: Node.jsプロジェクトのセットアップ**
 
 以下の手順は、**Dockerコンテナ内**で行います。
-
-1. **`package.json`の初期化**
-   ```bash
-   npm init -y
-   ```
-
-2. **必要なパッケージのインストール**
-   ```bash
-   npm install lite-server --save-dev
-   ```
-
-3. **`scripts`セクションの更新**
-   `package.json`の`scripts`セクションに以下を追加：
-   ```json
-   "scripts": {
-       "start": "lite-server"
-   }
-   ```
-
-4. **サンプルHTMLファイルの作成**
-   ```bash
-   mkdir public
-   echo "<!DOCTYPE html><html><head><title>SiteWatcher</title></head><body><h1>Welcome to SiteWatcher!</h1></body></html>" > public/index.html
-   ```
-
-5. **ローカルサーバーの起動**
+1. **ローカルサーバーの起動**
    ```bash
    npm start
    ```
