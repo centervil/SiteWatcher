@@ -1,0 +1,19 @@
+# Node.js
+node_modules/
+npm-debug.log
+package-lock.json
+
+# 環境変数ファイル
+.env
+
+# VSCode設定
+.vscode/
+
+# Docker
+docker-compose.override.yml
+.docker/
+
+# その他
+dist/
+build/
+coverage/
