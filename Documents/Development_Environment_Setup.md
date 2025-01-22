@@ -1,6 +1,19 @@
-# **開発環境構築手順**
+# 開発環境構築手順
 
-## **目標**
+## 目次
+1. [目標](#目標)
+2. [GitHubリポジトリのセットアップ](#githubリポジトリのセットアップ)
+   - [フォルダ構成](#フォルダ構成)
+   - [GitHub Pagesの設定](#github-pagesの設定)
+3. [WSL2環境のセットアップ](#wsl2環境のセットアップ)
+   - [インストール](#インストール)
+   - [リポジトリのクローン](#リポジトリのクローン)
+4. [Docker環境のセットアップ](#docker環境のセットアップ)
+   - [用意する仮想環境](#用意する仮想環境)
+   - [Dockerのインストール](#dockerのインストール)
+5. [CI/CD環境の準備](#cicd環境の準備)
+
+## 目標
 - AWS環境を活用したアプリケーション開発のための開発環境を構築する。
 - **要件**：
   1. ローカルのVSCodeでコード編集。
@@ -9,11 +22,27 @@
   4. Dockerコンテナ化で環境をコード化し、再現性を確保。
   5. Docker内で開発を完結することで、依存関係を分離し再現性を向上。
 
----
+## GitHubリポジトリのセットアップ
 
-## **ステップ 1: WSL2の準備**
+### フォルダ構成
+1. プロジェクトのルートディレクトリを作成し、以下のようなフォルダ構成を用意します。
+   ```
+   SiteWatcher/
+   ├── frontend/
+   ├── backend/
+   ├── docs/
+   └── .github/
+   ```
 
-### **ステップ 1.1: WSL2のインストール**
+### GitHub Pagesの設定
+1. GitHubに新しいリポジトリを作成します。
+2. リポジトリの「Settings」タブに移動し、「Pages」セクションを見つけます。
+3. 「Source」ドロップダウンメニューから「main branch」を選択し、必要に応じてフォルダを指定します。
+4. 設定を保存し、指定したURLでホスティングを確認します。
+
+## WSL2環境のセットアップ
+
+### インストール
 1. **PowerShellを管理者権限で開く**。
 2. 以下のコマンドを実行してWSL2を有効化：
    ```powershell
@@ -25,50 +54,27 @@
    ```
 4. Ubuntuを起動して初期設定（ユーザー名とパスワードを設定）。
 
----
-
-### **ステップ 1.2: 必要なツールのインストール**
-1. **Ubuntuにログイン**し、以下を実行：
+### リポジトリのクローン
+1. WSL2上で、以下のコマンドを実行してリポジトリをクローンします。
    ```bash
-   sudo apt update && sudo apt upgrade -y
-   sudo apt install -y git curl unzip npm
+   git clone https://github.com/yourusername/SiteWatcher.git
+   cd SiteWatcher
    ```
 
----
+## Docker環境のセットアップ
 
-## **ステップ 2: Dockerの準備**
+### Dockerのインストール
+1. **Docker Desktopのインストール**:
+   - [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/)をダウンロードしてインストールします。
+   - Docker Desktopの設定で「WSL2バックエンド」を有効化します。
 
-### **ステップ 2.1: Docker Desktopのインストール**
-1. [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/)をダウンロードしてインストール。
-2. Docker Desktopの設定で「WSL2バックエンド」を有効化。
-   - **Settings → General → Use the WSL 2 based engine** をオン。
-3. DockerのWSL2統合を有効化：
-   - **Settings → Resources → WSL Integration** でUbuntuを有効にする。
+### 用意する仮想環境
+- **フロントエンド**と**バックエンド**の2つの仮想環境を用意します。
 
-### **ステップ 2.2: Docker Composeのインストール確認**
-Docker DesktopにDocker Composeが含まれているため、以下でバージョンを確認：
-```bash
-docker-compose --version
-```
-
----
-
-## **ステップ 3: Docker環境のセットアップ**
-
-### **ステップ 3.1: WSL2上での作業**
-以下の作業はすべて**WSL2環境**で実行します。
-
-1. **プロジェクトのディレクトリを作成**
-   ```bash
-   mkdir -p ~/SiteWatcher
-   cd ~/SiteWatcher
-   ```
-
-2. **Dockerfileの作成**
-   ```bash
-   nano Dockerfile
-   ```
-   以下を記述し保存：
+#### フロントエンド環境
+1. **Dockerfileの作成**:
+   - プロジェクトのルートディレクトリ内の`frontend`フォルダに`Dockerfile`を作成します。ローカルのVSCodeで以下のファイルを編集します。
+   - `frontend/Dockerfile`を開き、以下を記述します。
    ```dockerfile
    FROM node:18
    WORKDIR /usr/src/app
@@ -79,89 +85,119 @@ docker-compose --version
    CMD ["npm", "start"]
    ```
 
-3. **docker-compose.ymlの作成**
-   ```bash
-   nano docker-compose.yml
+#### バックエンド環境
+1. **Dockerfileの作成**:
+   - プロジェクトのルートディレクトリ内の`backend`フォルダに`Dockerfile`を作成します。ローカルのVSCodeで以下のファイルを編集します。
+   - `backend/Dockerfile`を開き、以下を記述します。
+   ```dockerfile
+   FROM node:18
+   WORKDIR /usr/src/app
+   COPY package*.json ./
+   RUN npm install
+   COPY . .
+   EXPOSE 4000
+   CMD ["npm", "start"]
    ```
-   以下を記述し保存：
+
+### docker-compose.ymlの作成
+- プロジェクトのルートディレクトリに`docker-compose.yml`を作成します。ローカルのVSCodeで以下のファイルを編集します。
+- `docker-compose.yml`を開き、以下を記述します。
+```yaml
+version: "3.8"
+services:
+  frontend:
+    build:
+      context: ./frontend
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
+
+  backend:
+    build:
+      context: ./backend
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "4000:4000"
+    stdin_open: true
+    tty: true
+```
+
+### Docker環境の起動方法
+1. **Docker環境の起動**:
+   - プロジェクトのルートディレクトリで以下のコマンドを実行します。
+   ```bash
+   docker-compose up -d
+   ```
+   - `-d`オプションは、コンテナをバックグラウンドで実行するためのものです。
+
+2. **コンテナの状態確認**:
+   - 起動したコンテナの状態を確認するには、以下のコマンドを実行します。
+   ```bash
+   docker-compose ps
+   ```
+
+3. **コンテナに入る**:
+   - 確認したコンテナ名を使って、以下のようにコンテナに入ることができます。
+   ```bash
+   docker exec -it <コンテナ名> bash
+   ```
+
+例えば、`frontend`という名前のコンテナが実行中であれば、次のように実行します。
+```bash
+docker exec -it frontend bash
+```
+
+4. **Docker環境の停止**:
+   - Docker環境を停止するには、以下のコマンドを実行します。
+   ```bash
+   docker-compose down
+   ```
+
+## CI/CD環境の準備
+1. **GitHub Actionsの設定**:
+   - リポジトリのルートに `.github/workflows` フォルダを作成し、`deploy.yml` ファイルを作成します。
+
+2. **`deploy.yml`の例**:
    ```yaml
-   version: "3.8"
-   services:
-     frontend:
-       build: .
-       volumes:
-         - .:/usr/src/app
-         - /usr/src/app/node_modules
-       ports:
-         - "3000:3000"
-       stdin_open: true
-       tty: true
+   name: Deploy to GitHub Pages
+
+   on:
+     push:
+       branches:
+         - main
+
+   jobs:
+     deploy:
+       runs-on: ubuntu-latest
+       steps:
+         - name: Checkout code
+           uses: actions/checkout@v2
+
+         - name: Setup Node.js
+           uses: actions/setup-node@v2
+           with:
+             node-version: '18'
+
+         - name: Install dependencies
+           run: npm install
+
+         - name: Build project
+           run: npm run build
+
+         - name: Deploy to GitHub Pages
+           uses: peaceiris/actions-gh-pages@v3
+           with:
+             github_token: ${{ secrets.GITHUB_TOKEN }}
+             publish_dir: ./frontend
    ```
 
-5. **`package.json`の生成**
-   ```bash
-   npm init -y
-   ```
-
-6. **`package.json`にlite-serverのインストールを追記**
-   ```bash
-   npm install lite-server --save-dev
-   ```
-7. **`scripts`セクションの更新**
-   `package.json`の`scripts`セクションに以下を追加：
-   ```json
-   "scripts": {
-       "start": "lite-server"
-   }
-   ```
-8. **ルートフォルダにサンプルHTMLファイルの作成**
-   ```html
-   <!DOCTYPE html><html><head><title>SiteWatcher</title></head><body><h1>Welcome to SiteWatcher!</h1></body></html>
-   ```
-
-9. **Dockerイメージのビルド**
-   ```bash
-   docker compose build
-   ```
-   ```bash
-   docker compose build
-   ```
-
-10. **Dockerコンテナの起動**
-   ```bash
-   docker compose up -d
-   ```
-
-11. **Dockerコンテナに入る**
-   ```bash
-   docker exec -it sitewatcher-frontend-1 bash
-   ```
-
----
-
-## **ステップ 4: Node.jsプロジェクトのセットアップ**
-
-以下の手順は、**Dockerコンテナ内**で行います。
-1. **ローカルサーバーの起動**
-   ```bash
-   npm start
-   ```
-
----
-
-## **ステップ 5: 開発環境の使用**
-
-### **ステップ 5.1: ブラウザで確認**
-- ローカル環境でサーバーを起動すると、`http://localhost:3000`でアプリを確認できます。
-
-### **ステップ 5.2: コンテナの管理**
-- 停止：
-  ```bash
-  docker compose down
-  ```
-- 再起動：
-  ```bash
-  docker compose up -d
-  ```
+3. **GitHub Secretsの設定**:
+   - リポジトリの「Settings」タブで「Secrets and variables」から「Actions」を選択し、必要なシークレットを設定します。
 
 ---
