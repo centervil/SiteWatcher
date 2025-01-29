@@ -12,6 +12,7 @@ SiteWatcher
 ## **主要機能**
 - ユーザーがブックマークとして複数のURLを登録し、それを表示する。
 - 登録したURLの最終アクセス日時を保存し、表示する。
+- 登録したURLの最終更新日をチェックし、更新されている場合は通知する。
 - GitHub Pagesでホスティングし、シンプルなWebインターフェースを提供する。
 
 ---
@@ -41,7 +42,10 @@ SiteWatcher
   - API Gatewayでフロントエンドとバックエンドの連携を行う。
 
 - **構成図:**  
-  フロントエンド (GitHub Pages) ⇔ API Gateway ⇔ AWS Lambda ⇔ DynamoDB
+```mermaid
+graph LR;
+  A[GitHub Pages] <--> B[API Gateway] <--> C[AWS Lambda] <--> D[DynamoDB];
+```
 
 ---
 
