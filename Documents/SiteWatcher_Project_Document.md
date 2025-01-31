@@ -66,12 +66,3 @@ graph LR;
 4. **CI/CDの設定:** GitHub Actionsでフロントエンド・バックエンドのデプロイを自動化する。
 5. **機能拡張:** 上記のセットを何度も繰り返し、必要に応じてフレームワーク導入や新機能追加を検討する。
 
----
-
-# **参考情報**
-- **学習用リソース:**  
-  - [AWS公式ドキュメント](https://aws.amazon.com/documentation/)  
-  - [GitHub Actions公式ガイド](https://docs.github.com/en/actions)  
-  - [DynamoDBのデータ設計ガイド](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/best-practices.html)
-
-

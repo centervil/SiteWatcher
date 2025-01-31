@@ -16,11 +16,11 @@
 ## 目標
 - AWS環境を活用したアプリケーション開発のための開発環境を構築する。
 - **要件**：
-  1. ローカルのVSCodeでコード編集。
-  2. VSCodeまたはブラウザですべての操作を完結。
-  3. WSL2環境を極力シンプルにする。
-  4. Dockerコンテナ化で環境をコード化し、再現性を確保。
-  5. Docker内で開発を完結することで、依存関係を分離し再現性を向上。
+  1. ローカルのVSCodeでコード編集を行う。
+  2. VSCodeまたはブラウザですべての操作を完結させる。
+  3. WSL2環境を極力シンプルに保つ。
+  4. Dockerコンテナ化で環境をコード化し、再現性を確保する。
+  5. Docker内で開発を完結させることで、依存関係を分離し再現性を向上させる。
 
 ## GitHubリポジトリのセットアップ
 
@@ -76,13 +76,28 @@
    - プロジェクトのルートディレクトリ内の`frontend`フォルダに`Dockerfile`を作成します。ローカルのVSCodeで以下のファイルを編集します。
    - `frontend/Dockerfile`を開き、以下を記述します。
    ```dockerfile
-   FROM node:18
+   # Node.jsを使用してビルドする
+   FROM node:18 AS build
+
    WORKDIR /usr/src/app
+
    COPY package*.json ./
+
    RUN npm install
+
    COPY . .
-   EXPOSE 3000
-   CMD ["npm", "start"]
+
+   # 静的ファイルをビルド
+   RUN npm run build
+
+   # Nginxを使用して静的ファイルを提供
+   FROM nginx:alpine
+
+   # ビルドされたファイルをNginxのデフォルトの公開ディレクトリにコピー
+   COPY --from=build /usr/src/app/build /usr/share/nginx/html
+
+   # Nginxを起動
+   CMD ["nginx", "-g", "daemon off;"]
    ```
 
 #### バックエンド環境
