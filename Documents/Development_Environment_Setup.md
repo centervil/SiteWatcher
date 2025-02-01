@@ -69,7 +69,7 @@
    - Docker Desktopの設定で「WSL2バックエンド」を有効化します。
 
 ### 用意する仮想環境
-- **フロントエンド**と**バックエンド**の2つの仮想環境を用意します。
+- **フロントエンド**はGitHub Pagesを模した静的ホスティング環境を用意し、**バックエンド**はAWS LambdaとDynamoDBを使用するサーバーレス構成を模した仮想環境を用意します。
 
 #### フロントエンド環境
 1. **Dockerfileの作成**:
@@ -133,10 +133,9 @@
    ```
 
 3. **バックエンドのローカルテスト**:
-   - AWS SAM CLIを使用して、ローカルでLambda関数をテストします。
-   - SAM CLIをインストールし、以下のコマンドでローカルテストを実行します。
+   - AWS LambdaのDockerイメージを使用して、以下のコマンドを実行します。
    ```bash
-   sam local invoke "FunctionName" -e event.json
+   docker run --rm -v "$PWD":/var/task lambci/lambda:nodejs18.x app.handler -e event.json
    ```
 
 ### docker-compose.ymlの作成
