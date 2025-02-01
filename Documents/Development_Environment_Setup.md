@@ -105,13 +105,38 @@
    - プロジェクトのルートディレクトリ内の`backend`フォルダに`Dockerfile`を作成します。ローカルのVSCodeで以下のファイルを編集します。
    - `backend/Dockerfile`を開き、以下を記述します。
    ```dockerfile
-   FROM node:18
-   WORKDIR /usr/src/app
+   # AWS Lambdaのローカル開発環境を構築するためのDockerfile
+
+   FROM amazon/aws-lambda-nodejs:18
+
+   # 作業ディレクトリを設定
+   WORKDIR /var/task
+
+   # package.jsonとpackage-lock.jsonをコピー
    COPY package*.json ./
+
+   # 依存関係をインストール
    RUN npm install
+
+   # アプリケーションコードをコピー
    COPY . .
-   EXPOSE 4000
-   CMD ["npm", "start"]
+
+   # Lambda関数のエントリーポイントを指定
+   CMD ["app.handler"]
+   ```
+
+2. **DynamoDBローカルのセットアップ**:
+   - DynamoDBをローカルで使用する場合は、AWSのDynamoDBローカルを使用します。
+   - DynamoDBローカルのDockerイメージを使用して、以下のコマンドでコンテナを起動します。
+   ```bash
+   docker run -p 8000:8000 amazon/dynamodb-local
+   ```
+
+3. **バックエンドのローカルテスト**:
+   - AWS SAM CLIを使用して、ローカルでLambda関数をテストします。
+   - SAM CLIをインストールし、以下のコマンドでローカルテストを実行します。
+   ```bash
+   sam local invoke "FunctionName" -e event.json
    ```
 
 ### docker-compose.ymlの作成
