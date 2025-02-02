@@ -1,10 +1,29 @@
+version: "3.8"
 services:
   frontend:
-    build: .
+    build:
+      context: ./frontend
     volumes:
-      - .:/usr/src/app
+      - ./frontend:/usr/src/app
       - /usr/src/app/node_modules
     ports:
       - "3000:3000"
     stdin_open: true
     tty: true
+
+  dynamodb:
+    image: amazon/dynamodb-local
+    ports:
+      - "8000:8000"
+    command: "-jar DynamoDBLocal.jar -sharedDb"
+
+  backend:
+    build:
+      context: ./backend
+    volumes:
+      - ./backend:/var/task
+    environment:
+      - AWS_ACCESS_KEY_ID=your_access_key
+      - AWS_SECRET_ACCESS_KEY=your_secret_key
+      - AWS_REGION=your_region
+    command: ["app.handler"]

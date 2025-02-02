@@ -155,16 +155,22 @@ services:
     stdin_open: true
     tty: true
 
+  dynamodb:
+    image: amazon/dynamodb-local
+    ports:
+      - "8000:8000"
+    command: "-jar DynamoDBLocal.jar -sharedDb"
+
   backend:
     build:
       context: ./backend
     volumes:
-      - ./backend:/usr/src/app
-      - /usr/src/app/node_modules
-    ports:
-      - "4000:4000"
-    stdin_open: true
-    tty: true
+      - ./backend:/var/task
+    environment:
+      - AWS_ACCESS_KEY_ID=your_access_key
+      - AWS_SECRET_ACCESS_KEY=your_secret_key
+      - AWS_REGION=your_region
+    command: ["app.handler"]
 ```
 
 ### Docker環境の起動方法
