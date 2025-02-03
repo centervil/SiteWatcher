@@ -30,7 +30,7 @@
    SiteWatcher/
    ├── frontend/
    ├── backend/
-   ├── docs/
+   ├── Documents/
    └── .github/
    ```
 
@@ -153,6 +153,44 @@
    docker run --rm -v "$PWD":/var/task lambci/lambda:nodejs18.x app.handler -e event.json
    ```
 
+### AWS認証情報の取り扱い方法
+
+AWSの認証情報は機密情報であり、適切に管理する必要があります。以下に、認証情報の取り扱い方法の候補を示します。
+
+#### 1. .envファイル方式
+- **概要**: 
+  - 認証情報を`.env`ファイルに記載し、環境変数として読み込む方法です。
+- **手順**:
+  1. プロジェクトのルートディレクトリに`.env`ファイルを作成します。
+  2. `.env`ファイルに以下のように認証情報を記載します。
+     ```plaintext
+     AWS_ACCESS_KEY_ID=your_access_key
+     AWS_SECRET_ACCESS_KEY=your_secret_key
+     AWS_REGION=your_region
+     ```
+  3. `.gitignore`に`.env`を追加し、Gitにコミットされないようにします。
+- **メリット**: 簡単に設定でき、ローカル開発環境での使用に適しています。
+
+#### 2. AWSのサービスを利用する方式
+- **概要**: 
+  - AWS Secrets ManagerやAWS Systems Manager Parameter Storeを使用して、認証情報を安全に管理する方法です。
+- **手順**:
+  1. AWSコンソールでSecrets ManagerまたはParameter Storeを設定し、認証情報を保存します。
+  2. アプリケーションからAWS SDKを使用して、認証情報を動的に取得します。
+- **メリット**: 認証情報をクラウド上で安全に管理でき、セキュリティが向上します。
+
+#### 3. GitHubのサービスを利用する方式
+- **概要**: 
+  - GitHub ActionsのSecretsを使用して、認証情報を管理する方法です。
+- **手順**:
+  1. GitHubリポジトリの「Settings」タブで「Secrets and variables」から「Actions」を選択し、認証情報を追加します。
+  2. GitHub Actionsのワークフロー内で、Secretsを参照して使用します。
+- **メリット**: CI/CDパイプラインでの使用に適しており、GitHub上で安全に管理できます。
+
+#### 選択する方式: .envファイル方式
+- **理由**: 
+  - ローカル開発環境での簡便さと設定の容易さから、`.env`ファイル方式を選択します。この方法は、開発者が迅速に環境をセットアップし、認証情報を安全に管理するのに適しています。
+
 ### docker-compose.ymlの作成
 - プロジェクトのルートディレクトリに`docker-compose.yml`を作成します。ローカルのVSCodeで以下のファイルを編集します。
 - `docker-compose.yml`を開き、以下を記述します。
@@ -182,9 +220,9 @@ services:
     volumes:
       - ./backend:/var/task
     environment:
-      - AWS_ACCESS_KEY_ID=your_access_key
-      - AWS_SECRET_ACCESS_KEY=your_secret_key
-      - AWS_REGION=your_region
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_REGION
     command: ["app.handler"]
 ```
 
