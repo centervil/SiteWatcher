@@ -214,7 +214,7 @@ services:
       - "8000:8000"
     command: "-jar DynamoDBLocal.jar -sharedDb"
 
-  backend:
+  backend-dev:
     build:
       context: ./backend
     volumes:
@@ -224,6 +224,16 @@ services:
       - AWS_SECRET_ACCESS_KEY
       - AWS_REGION
     command: ["app.handler"]
+
+  backend-test:
+    image: lambci/lambda:nodejs18.x
+    volumes:
+      - ./backend:/var/task
+    environment:
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_REGION
+    command: ["app.handler", "-e", "event.json"]
 ```
 
 ### Docker環境の起動方法
