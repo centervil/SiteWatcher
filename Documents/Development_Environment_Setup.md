@@ -268,8 +268,11 @@ docker exec -it frontend bash
    ```
 
 ## CI/CD環境の準備
+
+GitHub Actionsを使用して、コードの変更がリポジトリにプッシュされたときに自動的にビルドとデプロイを行うための設定を行います。
+
 1. **GitHub Actionsの設定**:
-   - リポジトリのルートに `.github/workflows` フォルダを作成し、`deploy.yml` ファイルを作成します。
+   - リポジトリのルートに `.github/workflows` フォルダを作成し、`deploy.yml` ファイルを作成します。このファイルにCI/CDのワークフローを定義します。
 
 2. **`deploy.yml`の例**:
    ```yaml
@@ -305,7 +308,19 @@ docker exec -it frontend bash
              publish_dir: ./frontend
    ```
 
+   - **トリガー**: `main` ブランチにプッシュされたときにワークフローが実行されます。
+   - **ジョブの実行環境**: `ubuntu-latest` でジョブを実行します。
+   - **ステップ**:
+     1. **コードのチェックアウト**: `actions/checkout@v2` を使用して、リポジトリのコードを取得します。
+     2. **Node.jsのセットアップ**: `actions/setup-node@v2` を使用して、Node.jsのバージョン18をセットアップします。
+     3. **依存関係のインストール**: `npm install` を実行して、プロジェクトの依存関係をインストールします。
+     4. **プロジェクトのビルド**: `npm run build` を実行して、プロジェクトをビルドします。
+     5. **GitHub Pagesへのデプロイ**: `peaceiris/actions-gh-pages@v3` を使用して、ビルドされた静的ファイルをGitHub Pagesにデプロイします。`publish_dir` はデプロイするディレクトリを指定します。
+
 3. **GitHub Secretsの設定**:
-   - リポジトリの「Settings」タブで「Secrets and variables」から「Actions」を選択し、必要なシークレットを設定します。
+   - セキュリティを確保するために、デプロイに必要な機密情報（例えば、GitHubトークン）を安全に管理します。
+   - GitHubリポジトリの「Settings」タブで「Secrets and variables」から「Actions」を選択し、必要なシークレットを設定します。これにより、ワークフロー内で安全に機密情報を使用できます。
+
+この設定により、コードがリポジトリにプッシュされるたびに、自動的にビルドとデプロイが行われます。これにより、手動でのデプロイ作業を省略し、開発者がコードの変更を迅速に反映できるようになります。CI/CDパイプラインは、開発プロセスの効率化と品質向上に寄与します。
 
 ---
