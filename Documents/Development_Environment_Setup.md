@@ -276,7 +276,7 @@ GitHub Actionsを使用して、コードの変更がリポジトリにプッシ
 
 2. **`deploy.yml`の例**:
    ```yaml
-   name: Deploy to GitHub Pages
+   name: CI/CD Pipeline
 
    on:
      push:
@@ -284,7 +284,7 @@ GitHub Actionsを使用して、コードの変更がリポジトリにプッシ
          - main
 
    jobs:
-     deploy:
+     frontend-deploy:
        runs-on: ubuntu-latest
        steps:
          - name: Checkout code
@@ -305,22 +305,38 @@ GitHub Actionsを使用して、コードの変更がリポジトリにプッシ
            uses: peaceiris/actions-gh-pages@v3
            with:
              github_token: ${{ secrets.GITHUB_TOKEN }}
-             publish_dir: ./frontend
+             publish_dir: ./frontend/build
+
+     backend-deploy:
+       runs-on: ubuntu-latest
+       needs: frontend-deploy
+       steps:
+         - name: Checkout code
+           uses: actions/checkout@v2
+
+         - name: Setup AWS CLI
+           uses: aws-actions/configure-aws-credentials@v1
+           with:
+             aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+             aws-region: ${{ secrets.AWS_REGION }}
+
+         - name: Deploy to AWS Lambda
+           run: |
+             zip -r function.zip .
+             aws lambda update-function-code --function-name your-lambda-function-name --zip-file fileb://function.zip
    ```
 
    - **トリガー**: `main` ブランチにプッシュされたときにワークフローが実行されます。
    - **ジョブの実行環境**: `ubuntu-latest` でジョブを実行します。
    - **ステップ**:
-     1. **コードのチェックアウト**: `actions/checkout@v2` を使用して、リポジトリのコードを取得します。
-     2. **Node.jsのセットアップ**: `actions/setup-node@v2` を使用して、Node.jsのバージョン18をセットアップします。
-     3. **依存関係のインストール**: `npm install` を実行して、プロジェクトの依存関係をインストールします。
-     4. **プロジェクトのビルド**: `npm run build` を実行して、プロジェクトをビルドします。
-     5. **GitHub Pagesへのデプロイ**: `peaceiris/actions-gh-pages@v3` を使用して、ビルドされた静的ファイルをGitHub Pagesにデプロイします。`publish_dir` はデプロイするディレクトリを指定します。
+     - フロントエンドのビルドとGitHub Pagesへのデプロイ。
+     - AWS CLIを使用してバックエンドのAWS Lambdaへのデプロイ。
 
 3. **GitHub Secretsの設定**:
-   - セキュリティを確保するために、デプロイに必要な機密情報（例えば、GitHubトークン）を安全に管理します。
+   - セキュリティを確保するために、デプロイに必要な機密情報（例えば、GitHubトークン、AWS認証情報）を安全に管理します。
    - GitHubリポジトリの「Settings」タブで「Secrets and variables」から「Actions」を選択し、必要なシークレットを設定します。これにより、ワークフロー内で安全に機密情報を使用できます。
 
-この設定により、コードがリポジトリにプッシュされるたびに、自動的にビルドとデプロイが行われます。これにより、手動でのデプロイ作業を省略し、開発者がコードの変更を迅速に反映できるようになります。CI/CDパイプラインは、開発プロセスの効率化と品質向上に寄与します。
+この設定により、コードがリポジトリにプッシュされるたびに、自動的にフロントエンドとバックエンドの両方がデプロイされます。これにより、手動でのデプロイ作業を省略し、開発者がコードの変更を迅速に反映できるようになります。CI/CDパイプラインは、開発プロセスの効率化と品質向上に寄与します。
 
 ---
