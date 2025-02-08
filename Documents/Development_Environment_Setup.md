@@ -83,6 +83,9 @@
 
    COPY package*.json ./
 
+   # http-serverをグローバルにインストール
+   RUN npm install -g http-server
+
    RUN npm install
 
    COPY . .

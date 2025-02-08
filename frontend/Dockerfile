@@ -5,6 +5,9 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
+# http-serverをグローバルにインストール
+RUN npm install -g http-server
+
 RUN npm install
 
 COPY . .
@@ -12,11 +15,14 @@ COPY . .
 # 静的ファイルをビルド
 RUN npm run build
 
+# http-serverを使用して静的ファイルを提供
+CMD ["http-server", "build", "-p", "3000"]
+
 # Nginxを使用して静的ファイルを提供
-FROM nginx:alpine
+# FROM nginx:alpine
 
 # ビルドされたファイルをNginxのデフォルトの公開ディレクトリにコピー
-COPY --from=build /usr/src/app/build /usr/share/nginx/html
+# COPY --from=build /usr/src/app/build /usr/share/nginx/html
 
 # Nginxを起動
-CMD ["nginx", "-g", "daemon off;"] 
+# CMD ["nginx", "-g", "daemon off;"] 
