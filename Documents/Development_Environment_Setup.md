@@ -316,6 +316,22 @@ docker exec -it frontend bash
    });
    ```
 
+   **package.json**:
+   - `frontend`ディレクトリに`package.json`を作成し、以下の内容を記述します。
+   ```json
+   {
+     "name": "sitewatcher-frontend",
+     "version": "1.0.0",
+     "scripts": {
+       "start": "http-server -p 3000",
+       "build": "echo 'Building frontend...'"
+     },
+     "dependencies": {
+       "http-server": "^0.12.3"
+     }
+   }
+   ```
+
 2. **Dockerコンテナの起動**:
    - プロジェクトのルートディレクトリで以下のコマンドを実行し、Dockerコンテナを起動します。
    ```bash
@@ -401,7 +417,16 @@ docker exec -it frontend bash
    ```
 
 4. **AWS CLIの設定**:
-   - コンテナ内でAWS CLIをインストールし、認証情報を設定します。以下のコマンドを実行し、プロンプトに従ってAWSアクセスキー、シークレットキー、リージョンを入力します。
+   - コンテナ内でAWS CLIをインストールし、認証情報を設定します。以下のコマンドを実行し、AWS CLIをインストールします。
+   ```bash
+   curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+   unzip awscliv2.zip
+   sudo ./aws/install
+   ```
+   - インストール後、以下のコマンドを実行し、プロンプトに従ってAWSアクセスキー、シークレットキー、リージョンを入力します。
+   ```bash
+   aws configure
+   ```
    ```bash
    aws configure
    ```

@@ -1,0 +1,11 @@
+{
+  "name": "sitewatcher-backend",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.814.0"
+  }
+} 
