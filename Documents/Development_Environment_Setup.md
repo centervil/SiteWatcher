@@ -271,35 +271,151 @@ docker exec -it frontend bash
 
 ### フロントエンドの初期デプロイ
 
-1. **ビルドの準備**:
-   - プロジェクトのルートディレクトリで以下のコマンドを実行し、依存関係をインストールします。
+1. **最低限の実装**:
+   - 必要なHTML、CSS、JavaScriptファイルを`frontend`ディレクトリに配置します。
+
+   **HTML (index.html)**:
+   ```html
+   <!DOCTYPE html>
+   <html lang="ja">
+   <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>SiteWatcher</title>
+     <link rel="stylesheet" href="styles.css">
+   </head>
+   <body>
+     <h1>SiteWatcherへようこそ</h1>
+     <script src="app.js"></script>
+   </body>
+   </html>
+   ```
+
+   **CSS (styles.css)**:
+   ```css
+   body {
+     font-family: Arial, sans-serif;
+     background-color: #f0f0f0;
+     margin: 0;
+     padding: 0;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     height: 100vh;
+   }
+
+   h1 {
+     color: #333;
+   }
+   ```
+
+   **JavaScript (app.js)**:
+   ```javascript
+   document.addEventListener('DOMContentLoaded', () => {
+     console.log('SiteWatcherが起動しました');
+   });
+   ```
+
+2. **Dockerコンテナの起動**:
+   - プロジェクトのルートディレクトリで以下のコマンドを実行し、Dockerコンテナを起動します。
+   ```bash
+   docker-compose up -d frontend
+   ```
+
+3. **コンテナに入る**:
+   - フロントエンドのコンテナに入ります。`<frontend-container-name>`は実際のコンテナ名に置き換えてください。
+   ```bash
+   docker exec -it <frontend-container-name> bash
+   ```
+
+4. **ビルドの準備**:
+   - コンテナ内で以下のコマンドを実行し、依存関係をインストールします。
    ```bash
    npm install
    ```
 
-2. **ビルドの実行**:
+5. **ビルドの実行**:
    - フロントエンドのビルドを行います。
    ```bash
    npm run build
    ```
 
-3. **GitHub Pagesへのデプロイ**:
+6. **コンテナ環境での動作確認**:
+   - ビルドが成功したら、コンテナ内で以下のコマンドを実行し、ローカルサーバーを起動して動作確認を行います。
+   ```bash
+   npm start
+   ```
+   - ブラウザで `http://localhost:3000` にアクセスし、アプリケーションが正しく動作しているか確認します。
+
+7. **ローカルサーバーの停止**:
+   - 動作確認が完了したら、ローカルサーバーを停止します。
+   ```bash
+   Ctrl + C
+   ```
+
+8. **GitHub Pagesへのデプロイ**:
    - ビルドされたファイルをGitHub Pagesにデプロイします。GitHubリポジトリの「Settings」から「Pages」を選択し、デプロイするブランチを設定します。
 
 ### バックエンドの初期デプロイ
 
-1. **AWS CLIの設定**:
-   - AWS CLIをインストールし、認証情報を設定します。
+1. **最低限の実装**:
+   - AWS Lambdaで実行するためのNode.jsコードを`backend`ディレクトリに配置し、`package.json`に必要な依存関係を定義します。
+   - Lambda関数のエントリーポイントを`app.handler`として設定します。
+
+   **例: package.json**
+   ```json
+   {
+     "name": "sitewatcher-backend",
+     "version": "1.0.0",
+     "main": "app.js",
+     "scripts": {
+       "start": "node app.js"
+     },
+     "dependencies": {
+       "aws-sdk": "^2.814.0"
+     }
+   }
+   ```
+
+   **例: app.js**
+   ```javascript
+   exports.handler = async (event) => {
+     console.log("Lambda function has been invoked");
+     return {
+       statusCode: 200,
+       body: JSON.stringify('Hello from Lambda!'),
+     };
+   };
+   ```
+
+2. **Dockerコンテナの起動**:
+   - プロジェクトのルートディレクトリで以下のコマンドを実行し、バックエンドのDockerコンテナを起動します。
+   ```bash
+   docker-compose up -d backend-dev
+   ```
+
+3. **コンテナに入る**:
+   - バックエンドのコンテナに入ります。`<backend-dev-container-name>`は実際のコンテナ名に置き換えてください。
+   ```bash
+   docker exec -it <backend-dev-container-name> bash
+   ```
+
+4. **AWS CLIの設定**:
+   - コンテナ内でAWS CLIをインストールし、認証情報を設定します。以下のコマンドを実行し、プロンプトに従ってAWSアクセスキー、シークレットキー、リージョンを入力します。
    ```bash
    aws configure
    ```
 
-2. **Lambda関数のデプロイ**:
-   - バックエンドのコードをZIPファイルに圧縮し、AWS Lambdaにデプロイします。
+5. **Lambda関数のデプロイ**:
+   - バックエンドのコードをZIPファイルに圧縮し、AWS Lambdaにデプロイします。`your-lambda-function-name`は実際のLambda関数名に置き換えてください。
    ```bash
    zip -r function.zip .
    aws lambda update-function-code --function-name your-lambda-function-name --zip-file fileb://function.zip
    ```
+
+6. **コンテナ環境での動作確認**:
+   - デプロイが成功したら、AWSコンソールでLambda関数をテストします。AWSマネジメントコンソールにログインし、Lambdaサービスに移動して、デプロイした関数を選択します。
+   - 「テスト」タブで新しいテストイベントを作成し、関数が正しく動作しているか確認します。テストイベントのJSONを入力し、関数を実行してレスポンスを確認します。
 
 ## CI/CD環境の準備
 
