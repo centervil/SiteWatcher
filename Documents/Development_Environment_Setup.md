@@ -267,6 +267,40 @@ docker exec -it frontend bash
    docker-compose down
    ```
 
+## フロントエンド、バックエンドの初期実装デプロイ手順
+
+### フロントエンドの初期デプロイ
+
+1. **ビルドの準備**:
+   - プロジェクトのルートディレクトリで以下のコマンドを実行し、依存関係をインストールします。
+   ```bash
+   npm install
+   ```
+
+2. **ビルドの実行**:
+   - フロントエンドのビルドを行います。
+   ```bash
+   npm run build
+   ```
+
+3. **GitHub Pagesへのデプロイ**:
+   - ビルドされたファイルをGitHub Pagesにデプロイします。GitHubリポジトリの「Settings」から「Pages」を選択し、デプロイするブランチを設定します。
+
+### バックエンドの初期デプロイ
+
+1. **AWS CLIの設定**:
+   - AWS CLIをインストールし、認証情報を設定します。
+   ```bash
+   aws configure
+   ```
+
+2. **Lambda関数のデプロイ**:
+   - バックエンドのコードをZIPファイルに圧縮し、AWS Lambdaにデプロイします。
+   ```bash
+   zip -r function.zip .
+   aws lambda update-function-code --function-name your-lambda-function-name --zip-file fileb://function.zip
+   ```
+
 ## CI/CD環境の準備
 
 GitHub Actionsを使用して、コードの変更がリポジトリにプッシュされたときに自動的にビルドとデプロイを行うための設定を行います。
