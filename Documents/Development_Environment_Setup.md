@@ -456,14 +456,11 @@ GitHub Actionsを使用して、コードの変更がリポジトリにプッシ
          - name: Install dependencies
            run: npm install
 
-         - name: Build project
-           run: npm run build
-
          - name: Deploy to GitHub Pages
            uses: peaceiris/actions-gh-pages@v3
            with:
              github_token: ${{ secrets.GITHUB_TOKEN }}
-             publish_dir: ./frontend/build
+             publish_dir: ./frontend
 
      backend-deploy:
        runs-on: ubuntu-latest
@@ -488,7 +485,7 @@ GitHub Actionsを使用して、コードの変更がリポジトリにプッシ
    - **トリガー**: `main` ブランチにプッシュされたときにワークフローが実行されます。
    - **ジョブの実行環境**: `ubuntu-latest` でジョブを実行します。
    - **ステップ**:
-     - フロントエンドのビルドとGitHub Pagesへのデプロイ。
+     - フロントエンドのGitHub Pagesへのデプロイ。
      - AWS CLIを使用してバックエンドのAWS Lambdaへのデプロイ。
 
 3. **GitHub Secretsの設定**:
