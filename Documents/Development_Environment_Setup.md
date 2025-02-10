@@ -270,9 +270,7 @@ docker exec -it frontend bash
    docker-compose down
    ```
 
-## フロントエンド、バックエンドの初期実装デプロイ手順
-
-### フロントエンドの初期デプロイ
+## フロントエンドの初期デプロイ
 
 1. **最低限の実装**:
    - 必要なHTML、CSS、JavaScriptファイルを`frontend`ディレクトリに配置します。
@@ -326,8 +324,7 @@ docker exec -it frontend bash
      "name": "sitewatcher-frontend",
      "version": "1.0.0",
      "scripts": {
-       "start": "http-server -p 3000",
-       "build": "echo 'Building frontend...'"
+       "start": "http-server -p 3000"
      },
      "dependencies": {
        "http-server": "^0.12.3"
@@ -335,47 +332,19 @@ docker exec -it frontend bash
    }
    ```
 
-2. **Dockerコンテナの起動**:
-   - プロジェクトのルートディレクトリで以下のコマンドを実行し、Dockerコンテナを起動します。
+2. **Dockerコンテナのビルドと起動**:
+   - プロジェクトのルートディレクトリで以下のコマンドを実行し、Dockerコンテナをビルドして起動します。
    ```bash
-   docker-compose up -d frontend
+   docker-compose up -d --build
    ```
 
-3. **コンテナに入る**:
-   - フロントエンドのコンテナに入ります。`<frontend-container-name>`は実際のコンテナ名に置き換えてください。
-   ```bash
-   docker exec -it <frontend-container-name> bash
-   ```
-
-4. **ビルドの準備**:
-   - コンテナ内で以下のコマンドを実行し、依存関係をインストールします。
-   ```bash
-   npm install
-   ```
-
-5. **ビルドの実行**:
-   - フロントエンドのビルドを行います。
-   ```bash
-   npm run build
-   ```
-
-6. **コンテナ環境での動作確認**:
-   - ビルドが成功したら、コンテナ内で以下のコマンドを実行し、ローカルサーバーを起動して動作確認を行います。
-   ```bash
-   npm start
-   ```
+3. **動作確認**:
    - ブラウザで `http://localhost:3000` にアクセスし、アプリケーションが正しく動作しているか確認します。
 
-7. **ローカルサーバーの停止**:
-   - 動作確認が完了したら、ローカルサーバーを停止します。
-   ```bash
-   Ctrl + C
-   ```
-
-8. **GitHub Pagesへのデプロイ**:
+4. **GitHub Pagesへのデプロイ**:
    - ビルドされたファイルをGitHub Pagesにデプロイします。GitHubリポジトリの「Settings」から「Pages」を選択し、デプロイするブランチを設定します。
 
-### バックエンドの初期デプロイ
+## バックエンドの初期デプロイ
 
 1. **最低限の実装**:
    - AWS Lambdaで実行するためのNode.jsコードを`backend`ディレクトリに配置し、`package.json`に必要な依存関係を定義します。
@@ -427,9 +396,6 @@ docker exec -it frontend bash
    sudo ./aws/install
    ```
    - インストール後、以下のコマンドを実行し、プロンプトに従ってAWSアクセスキー、シークレットキー、リージョンを入力します。
-   ```bash
-   aws configure
-   ```
    ```bash
    aws configure
    ```
