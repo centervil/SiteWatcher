@@ -25,6 +25,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./frontend
+          publish_branch: gh-pages
 
   backend-deploy:
     runs-on: ubuntu-latest

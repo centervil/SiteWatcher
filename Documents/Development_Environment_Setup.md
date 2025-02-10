@@ -35,10 +35,43 @@
    ```
 
 ### GitHub Pagesの設定
-1. GitHubに新しいリポジトリを作成します。
-2. リポジトリの「Settings」タブに移動し、「Pages」セクションを見つけます。
-3. 「Source」ドロップダウンメニューから「main branch」を選択し、フォルダとして「frontend」を指定します。
-4. 設定を保存し、指定したURLでホスティングを確認します。
+
+1. **GitHubに新しいリポジトリを作成**:
+   - 上記のフォルダ構成を用意します。
+
+2. **GitHub Pages用のブランチ作成**:
+   - `gh-pages` ブランチを作成します。このブランチはGitHub Pagesで公開するために使用されます。
+
+   ```bash
+   git checkout --orphan gh-pages
+   git rm -rf .
+   echo "This is the gh-pages branch" > index.html
+   git add index.html
+   git commit -m "Initialize gh-pages branch"
+   git push origin gh-pages
+   ```
+
+3. **GitHub Pagesの設定**:
+   - GitHubリポジトリの「Settings」 > 「Pages」で、`Source` を `gh-pages` ブランチに設定します。
+
+4. **GitHub Actionsの設定**:
+   - `.github/workflows/deploy.yml` で、`gh-pages` ブランチにデプロイするように設定します。
+
+   ```yaml
+   - name: Deploy to GitHub Pages
+     uses: peaceiris/actions-gh-pages@v3
+     with:
+       github_token: ${{ secrets.GITHUB_TOKEN }}
+       publish_dir: ./frontend
+       publish_branch: gh-pages
+   ```
+
+   **`peaceiris/actions-gh-pages@v3` の説明**:
+   - `peaceiris/actions-gh-pages` は、GitHub Pagesにデプロイするためのアクションです。
+   - `@v3` はアクションのバージョンを指定しています。
+   - このアクションを使用することで、指定したディレクトリの内容を自動的に指定したブランチにデプロイできます。
+
+この設定により、`frontend` ディレクトリの内容が `gh-pages` ブランチにデプロイされ、GitHub Pagesで公開されます。
 
 ## WSL2環境のセットアップ
 
@@ -461,6 +494,7 @@ GitHub Actionsを使用して、コードの変更がリポジトリにプッシ
            with:
              github_token: ${{ secrets.GITHUB_TOKEN }}
              publish_dir: ./frontend
+             publish_branch: gh-pages
 
      backend-deploy:
        runs-on: ubuntu-latest
