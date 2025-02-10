@@ -240,6 +240,7 @@ services:
 ```
 
 ### Docker環境の起動方法
+
 1. **Docker環境の起動**:
    - プロジェクトのルートディレクトリで以下のコマンドを実行します。
    ```bash
@@ -247,28 +248,41 @@ services:
    ```
    - `-d`オプションは、コンテナをバックグラウンドで実行するためのものです。
 
-2. **コンテナの状態確認**:
+2. **Dockerイメージの再ビルド**:
+   - `Dockerfile` や依存関係に変更があった場合、以下のコマンドを使用してDockerイメージを再ビルドします。
+   ```bash
+   docker-compose up -d --build
+   ```
+   - `--build` オプションは、Dockerイメージを再ビルドするために使用します。これにより、変更が反映された新しいイメージが作成されます。
+
+3. **コンテナの状態確認**:
    - 起動したコンテナの状態を確認するには、以下のコマンドを実行します。
    ```bash
    docker-compose ps
    ```
 
-3. **コンテナに入る**:
+4. **コンテナに入る**:
    - 確認したコンテナ名を使って、以下のようにコンテナに入ることができます。
    ```bash
    docker exec -it <コンテナ名> bash
    ```
 
-例えば、`frontend`という名前のコンテナが実行中であれば、次のように実行します。
-```bash
-docker exec -it frontend bash
-```
+   例えば、`frontend`という名前のコンテナが実行中であれば、次のように実行します。
+   ```bash
+   docker exec -it frontend bash
+   ```
 
-4. **Docker環境の停止**:
+5. **Docker環境の停止**:
    - Docker環境を停止するには、以下のコマンドを実行します。
    ```bash
    docker-compose down
    ```
+
+### 注意事項
+
+- **`--build` オプションの使用**:
+  - `Dockerfile` に変更があった場合や、`package.json` などの依存関係ファイルに変更があった場合に使用します。
+  - 変更がない場合は、`docker-compose up -d` だけで十分です。これにより、既存のイメージを使用してコンテナを起動し、ビルド時間を短縮できます。
 
 ## フロントエンドの初期デプロイ
 
@@ -364,123 +378,3 @@ docker exec -it frontend bash
      }
    }
    ```
-
-   **例: app.js**
-   ```javascript
-   exports.handler = async (event) => {
-     console.log("Lambda function has been invoked");
-     return {
-       statusCode: 200,
-       body: JSON.stringify('Hello from Lambda!'),
-     };
-   };
-   ```
-
-2. **Dockerコンテナの起動**:
-   - プロジェクトのルートディレクトリで以下のコマンドを実行し、バックエンドのDockerコンテナを起動します。
-   ```bash
-   docker-compose up -d backend-dev
-   ```
-
-3. **コンテナに入る**:
-   - バックエンドのコンテナに入ります。`<backend-dev-container-name>`は実際のコンテナ名に置き換えてください。
-   ```bash
-   docker exec -it <backend-dev-container-name> bash
-   ```
-
-4. **AWS CLIの設定**:
-   - コンテナ内でAWS CLIをインストールし、認証情報を設定します。以下のコマンドを実行し、AWS CLIをインストールします。
-   ```bash
-   curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-   unzip awscliv2.zip
-   sudo ./aws/install
-   ```
-   - インストール後、以下のコマンドを実行し、プロンプトに従ってAWSアクセスキー、シークレットキー、リージョンを入力します。
-   ```bash
-   aws configure
-   ```
-
-5. **Lambda関数のデプロイ**:
-   - バックエンドのコードをZIPファイルに圧縮し、AWS Lambdaにデプロイします。`your-lambda-function-name`は実際のLambda関数名に置き換えてください。
-   ```bash
-   zip -r function.zip .
-   aws lambda update-function-code --function-name your-lambda-function-name --zip-file fileb://function.zip
-   ```
-
-6. **コンテナ環境での動作確認**:
-   - デプロイが成功したら、AWSコンソールでLambda関数をテストします。AWSマネジメントコンソールにログインし、Lambdaサービスに移動して、デプロイした関数を選択します。
-   - 「テスト」タブで新しいテストイベントを作成し、関数が正しく動作しているか確認します。テストイベントのJSONを入力し、関数を実行してレスポンスを確認します。
-
-## CI/CD環境の準備
-
-GitHub Actionsを使用して、コードの変更がリポジトリにプッシュされたときに自動的にビルドとデプロイを行うための設定を行います。
-
-1. **GitHub Actionsの設定**:
-   - リポジトリのルートに `.github/workflows` フォルダを作成し、`deploy.yml` ファイルを作成します。このファイルにCI/CDのワークフローを定義します。
-
-2. **`deploy.yml`の例**:
-   ```yaml
-   name: CI/CD Pipeline
-
-   on:
-     push:
-       branches:
-         - main
-
-   jobs:
-     frontend-deploy:
-       runs-on: ubuntu-latest
-       steps:
-         - name: Checkout code
-           uses: actions/checkout@v2
-
-         - name: Setup Node.js
-           uses: actions/setup-node@v2
-           with:
-             node-version: '18'
-
-         - name: Install dependencies
-           run: npm install
-
-         - name: Build project
-           run: npm run build
-
-         - name: Deploy to GitHub Pages
-           uses: peaceiris/actions-gh-pages@v3
-           with:
-             github_token: ${{ secrets.GITHUB_TOKEN }}
-             publish_dir: ./frontend/build
-
-     backend-deploy:
-       runs-on: ubuntu-latest
-       needs: frontend-deploy
-       steps:
-         - name: Checkout code
-           uses: actions/checkout@v2
-
-         - name: Setup AWS CLI
-           uses: aws-actions/configure-aws-credentials@v1
-           with:
-             aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-             aws-region: ${{ secrets.AWS_REGION }}
-
-         - name: Deploy to AWS Lambda
-           run: |
-             zip -r function.zip .
-             aws lambda update-function-code --function-name your-lambda-function-name --zip-file fileb://function.zip
-   ```
-
-   - **トリガー**: `main` ブランチにプッシュされたときにワークフローが実行されます。
-   - **ジョブの実行環境**: `ubuntu-latest` でジョブを実行します。
-   - **ステップ**:
-     - フロントエンドのビルドとGitHub Pagesへのデプロイ。
-     - AWS CLIを使用してバックエンドのAWS Lambdaへのデプロイ。
-
-3. **GitHub Secretsの設定**:
-   - セキュリティを確保するために、デプロイに必要な機密情報（例えば、GitHubトークン、AWS認証情報）を安全に管理します。
-   - GitHubリポジトリの「Settings」タブで「Secrets and variables」から「Actions」を選択し、必要なシークレットを設定します。これにより、ワークフロー内で安全に機密情報を使用できます。
-
-この設定により、コードがリポジトリにプッシュされるたびに、自動的にフロントエンドとバックエンドの両方がデプロイされます。これにより、手動でのデプロイ作業を省略し、開発者がコードの変更を迅速に反映できるようになります。CI/CDパイプラインは、開発プロセスの効率化と品質向上に寄与します。
-
----
