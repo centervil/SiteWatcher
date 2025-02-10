@@ -2,8 +2,7 @@
   "name": "sitewatcher-frontend",
   "version": "1.0.0",
   "scripts": {
-    "start": "http-server -p 3000",
-    "build": "echo 'Building frontend...'"
+    "start": "http-server -p 3000"
   },
   "dependencies": {
     "http-server": "^0.12.3"
