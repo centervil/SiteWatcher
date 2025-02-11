@@ -1,5 +1,5 @@
 {
-  "name": "sitewathcer",
+  "name": "sitewatcher",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,13 +11,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/centervil/SiteWathcer.git"
+    "url": "git+https://github.com/centervil/SiteWatcher.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/centervil/SiteWathcer/issues"
+    "url": "https://github.com/centervil/SiteWatcher/issues"
   },
-  "homepage": "https://github.com/centervil/SiteWathcer#readme"
+  "homepage": "https://github.com/centervil/SiteWatcher#readme"
 }
