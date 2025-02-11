@@ -12,6 +12,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: List files
+        run: ls -R  # ここでディレクトリの内容を表示
+
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
