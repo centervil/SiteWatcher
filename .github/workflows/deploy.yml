@@ -9,7 +9,6 @@ permissions:
   contents: read
   id-token: write  # id-tokenの権限を追加
   pages: write     # GitHub Pagesへの書き込み権限を追加
-  
 jobs:
   frontend-deploy:
     runs-on: ubuntu-latest
@@ -26,13 +25,18 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
+        working-directory: frontend
         run: npm install
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
 
       - name: Upload frontend artifact
         uses: actions/upload-artifact@v4
         with:
           name: frontend  # アーティファクト名
-          path: ./frontend  # frontendディレクトリを指定
+          path: ./frontend/build  # frontendディレクトリを指定
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
