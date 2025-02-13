@@ -57,7 +57,6 @@
    - name: Deploy to GitHub Pages
      uses: actions/deploy-pages@v2
      with:
-       github_token: ${{ secrets.GITHUB_TOKEN }}
        publish_dir: ./frontend
    ```
 
