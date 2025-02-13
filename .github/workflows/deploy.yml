@@ -34,7 +34,7 @@ jobs:
           path: ./frontend  # frontendディレクトリを指定
 
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           artifact_name: frontend  # アーティファクト名を指定
