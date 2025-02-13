@@ -15,23 +15,24 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: List files
-        run: ls -R  # ここでディレクトリの内容を表示
-
+        
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '18'
-
+          
       - name: Install dependencies
         working-directory: frontend
         run: npm install
-
+          
       - name: Build frontend
         working-directory: frontend
         run: npm run build
-
+        
+      - name: List files
+        working-directory: frontend
+        run: ls -R build  # buildフォルダの内容を表示
+          
       - name: Upload frontend artifact
         uses: actions/upload-artifact@v4
         with:
