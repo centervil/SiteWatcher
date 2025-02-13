@@ -8,7 +8,8 @@ on:
 permissions:
   contents: read
   id-token: write  # id-tokenの権限を追加
-
+  pages: write     # GitHub Pagesへの書き込み権限を追加
+  
 jobs:
   frontend-deploy:
     runs-on: ubuntu-latest
