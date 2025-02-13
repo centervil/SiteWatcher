@@ -49,8 +49,11 @@
 
 2. **GitHub Pagesの設定**:
    - GitHubリポジトリの「Settings」 > 「Pages」で、`Source` を `main` ブランチに設定します。
+   
+3. **GitHub Actionsの権限設定**:
+   - GitHubリポジトリの「Settings」 > 「Actions」 > 「General」セクションで、`GITHUB_TOKEN`の権限が適切に設定されているか確認します。特に、`id-token: write`の権限が必要です。
 
-3. **GitHub Actionsの設定**:
+4. **GitHub Actionsの設定**:
    - `.github/workflows/deploy.yml` で、`main` ブランチにデプロイするように設定します。
 
    ```yaml
