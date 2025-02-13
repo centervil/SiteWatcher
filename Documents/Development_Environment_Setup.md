@@ -47,39 +47,26 @@
 1. **GitHubに新しいリポジトリを作成**:
    - 上記のフォルダ構成を用意します。
 
-2. **GitHub Pages用のブランチ作成**:
-   - `gh-pages` ブランチを作成します。このブランチはGitHub Pagesで公開するために使用されます。
+2. **GitHub Pagesの設定**:
+   - GitHubリポジトリの「Settings」 > 「Pages」で、`Source` を `main` ブランチに設定します。
 
-   ```bash
-   git checkout --orphan gh-pages
-   git rm -rf .
-   echo "This is the gh-pages branch" > index.html
-   git add index.html
-   git commit -m "Initialize gh-pages branch"
-   git push origin gh-pages
-   ```
-
-3. **GitHub Pagesの設定**:
-   - GitHubリポジトリの「Settings」 > 「Pages」で、`Source` を `gh-pages` ブランチに設定します。
-
-4. **GitHub Actionsの設定**:
-   - `.github/workflows/deploy.yml` で、`gh-pages` ブランチにデプロイするように設定します。
+3. **GitHub Actionsの設定**:
+   - `.github/workflows/deploy.yml` で、`main` ブランチにデプロイするように設定します。
 
    ```yaml
    - name: Deploy to GitHub Pages
-     uses: peaceiris/actions-gh-pages@v3
+     uses: actions/deploy-pages@v2
      with:
        github_token: ${{ secrets.GITHUB_TOKEN }}
        publish_dir: ./frontend
-       publish_branch: gh-pages
    ```
 
-   **`peaceiris/actions-gh-pages@v3` の説明**:
-   - `peaceiris/actions-gh-pages` は、GitHub Pagesにデプロイするためのアクションです。
-   - `@v3` はアクションのバージョンを指定しています。
+   **`actions/deploy-pages@v2` の説明**:
+   - `actions/deploy-pages` は、GitHub Pagesにデプロイするためのアクションです。
+   - `@v2` はアクションのバージョンを指定しています。
    - このアクションを使用することで、指定したディレクトリの内容を自動的に指定したブランチにデプロイできます。
 
-この設定により、`frontend` ディレクトリの内容が `gh-pages` ブランチにデプロイされ、GitHub Pagesで公開されます。
+この設定により、`frontend` ディレクトリの内容が `main` ブランチにデプロイされ、GitHub Pagesで公開されます。
 
 ## WSL2環境のセットアップ
 

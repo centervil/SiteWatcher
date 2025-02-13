@@ -24,11 +24,10 @@ jobs:
         run: npm install
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: actions/deploy-pages@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./frontend
-          publish_branch: gh-pages
 
   backend-deploy:
     runs-on: ubuntu-latest
