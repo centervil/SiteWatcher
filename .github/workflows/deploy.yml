@@ -30,13 +30,14 @@ jobs:
       - name: Upload frontend artifact
         uses: actions/upload-artifact@v4
         with:
-          name: frontend
+          name: frontend  # アーティファクト名
           path: ./frontend  # frontendディレクトリを指定
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          artifact_name: frontend  # アーティファクト名を指定
 
   backend-deploy:
     runs-on: ubuntu-latest
