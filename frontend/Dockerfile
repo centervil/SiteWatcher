@@ -1,23 +1,20 @@
-# Node.jsを使用してビルドする
-FROM node:18 AS build
+FROM node:18
 
+# 作業ディレクトリを設定
 WORKDIR /usr/src/app
 
+# package.json と package-lock.json を先にコピーして依存関係をインストール（キャッシュ利用のため）
 COPY package*.json ./
+RUN npm install
 
-# http-serverをグローバルにインストール
-RUN npm install -g http-server
+# ソースコードをすべてコピー
+COPY . ./
 
-COPY . .
+# build スクリプトを実行して、静的ファイルを build ディレクトリに生成
+RUN npm run build && echo "Contents of build directory:" && ls -la build || echo "Build failed"
 
-# http-serverを使用して静的ファイルを提供
-CMD ["http-server", "-p", "3000"]
+# コンテナ外部に公開するポートを指定
+EXPOSE 3000
 
-# Nginxを使用して静的ファイルを提供
-# FROM nginx:alpine
-
-# ビルドされたファイルをNginxのデフォルトの公開ディレクトリにコピー
-# COPY --from=build /usr/src/app/build /usr/share/nginx/html
-
-# Nginxを起動
-# CMD ["nginx", "-g", "daemon off;"] 
+# package.json の start スクリプト (http-server を起動) を使ってサーバーを開始
+CMD ["npm", "start"]
