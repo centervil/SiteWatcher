@@ -25,7 +25,9 @@ jobs:
         run: |
           ls -R frontend
           mkdir -p frontend/build
-          cp frontend/index.html frontend/build/index.html
+          cp frontend/*.html frontend/build/
+          cp frontend/*.css frontend/build/
+          cp frontend/*.js frontend/build/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
