@@ -8,43 +8,39 @@ on:
 
 permissions:
   contents: read
-  id-token: write  # id-tokenの権限を追加
-  pages: write     # GitHub Pagesへの書き込み権限を追加
+  pages: write
+  id-token: write
+
 jobs:
   frontend-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        
+
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '18'
-          
+
       - name: Install dependencies
         working-directory: frontend
         run: npm install
-          
+
       - name: Build frontend
         working-directory: frontend
         run: npm run build
-        
-      - name: List files
-        working-directory: frontend
-        run: ls -R build  # buildフォルダの内容を表示
-          
-      - name: Upload frontend artifact
-        uses: actions/upload-artifact@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: frontend  # アーティファクト名
-          path: ./frontend/build  # frontendディレクトリを指定
+          path: './frontend/build'
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          artifact_name: frontend  # アーティファクト名を指定
 
   backend-deploy:
     runs-on: ubuntu-latest
@@ -63,4 +59,4 @@ jobs:
       - name: Deploy to AWS Lambda
         run: |
           zip -r function.zip .
-          aws lambda update-function-code --function-name your-lambda-function-name --zip-file fileb://function.zip 
+          aws lambda update-function-code --function-name your-lambda-function-name --zip-file fileb://function.zip
