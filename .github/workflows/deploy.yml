@@ -1,4 +1,4 @@
-name: Minimal GitHub Pages Deploy
+name: CI/CD Pipeline
 
 on:
   push:
@@ -12,22 +12,27 @@ permissions:
   id-token: write
 
 jobs:
-  deploy:
+  frontend-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm install
 
       - name: Build frontend
-        run: |
-          ls -R frontend
-          mkdir -p frontend/build
-          cp frontend/*.html frontend/build/
-          cp frontend/*.css frontend/build/
-          cp frontend/*.js frontend/build/
+        working-directory: frontend
+        run: npm run build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
