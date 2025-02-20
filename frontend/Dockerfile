@@ -1,25 +1,21 @@
-# Node.js 18の公式イメージを使用
-FROM node:18
+# ビルドステージ
+FROM node:18 as builder
 
-# 作業ディレクトリを設定
 WORKDIR /usr/src/app
 
-# package.json と package-lock.json を先にコピー（キャッシュを活用）
 COPY package.json package-lock.json ./
-
-# 依存関係をインストール（npm install よりも再現性の高い npm ci を使用）
 RUN npm ci
 
-# ソースコードをコピー
 COPY . .
+RUN npm run build
 
-# ビルドスクリプトを実行（エラー時に握りつぶさない）
-RUN npm run build && \
-    echo "Contents of build directory:" && \
-    ls -la build
+# 配信ステージ
+FROM nginx:latest
 
-# コンテナ外部に公開するポートを指定
-EXPOSE 3000
+# buildステージから成果物をコピー
+COPY --from=builder /usr/src/app/build /usr/share/nginx/html
 
-# アプリケーションの起動
-CMD ["npm", "start"]
+# ポート80でnginxをlisten (デフォルト)
+# EXPOSE 80 は不要 (nginx:latest イメージがデフォルトでEXPOSE 80 を設定している)
+
+CMD ["nginx", "-g", "daemon off;"]
