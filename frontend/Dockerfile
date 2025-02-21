@@ -3,10 +3,10 @@ FROM node:18 AS builder
 
 WORKDIR /usr/src/app
 
-COPY package.json ./
+COPY package*.json ./
 RUN npm install
 
-RUN date '+%Y-%m-%d %H:%M:%S' > build_timestamp.txt
+RUN rm -f build_timestamp.txt && date '+%Y-%m-%d %H:%M:%S' > build_timestamp.txt
 
 COPY . .
 RUN npm run build
