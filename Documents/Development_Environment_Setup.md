@@ -55,23 +55,42 @@
   ```yaml
   permissions:
     contents: read
-    id-token: write  # id-tokenの権限を追加
+    pages: write
+    id-token: write
   ```
 
-4. **GitHub Actionsの設定**:
-   - `.github/workflows/deploy.yml` で、`main` ブランチにデプロイするように設定します。
+4. **GitHub Actions の設定**:
+   - `.github/workflows/deploy.yml` で、GitHub Pages へのデプロイ設定を行います。
 
    ```yaml
+   - name: Setup Pages
+     uses: actions/configure-pages@v4"
+
+   - name: Upload artifact
+     uses: actions/upload-pages-artifact@v3"
+     with:
+       path: './frontend/build'"
+
    - name: Deploy to GitHub Pages
-     uses: actions/deploy-pages@v2
+     uses: actions/deploy-pages@v4"
    ```
 
-   **`actions/deploy-pages@v2` の説明**:
-   - `actions/deploy-pages` は、GitHub Pagesにデプロイするためのアクションです。
-   - `@v2` はアクションのバージョンを指定しています。
-   - このアクションを使用することで、指定したディレクトリの内容を自動的に指定したブランチにデプロイできます。
+   **`actions/deploy-pages@v4` の説明**:
+   - `actions/deploy-pages@v4` は、GitHub Pages へデプロイするためのGitHub Actions です。
+   - `@v4` はアクションのバージョンを表しています。
+   - このアクションを利用することで、指定したディレクトリの内容を自動的にGitHub Pages へデプロイできます。
 
-この設定により、`frontend` ディレクトリの内容が `main` ブランチにデプロイされ、GitHub Pagesで公開されます。
+   **`actions/configure-pages@v4` の説明**:
+   - `actions/configure-pages@v4` は、GitHub Pages の環境設定を行うGitHub Actions です。
+   - `@v4` はアクションのバージョンを表しています。
+   - このアクションを利用することで、GitHub Pages へのデプロイに必要な環境設定を自動的に行うことができます。
+
+   **`actions/upload-pages-artifact@v3` の説明**:
+   - `actions/upload-pages-artifact@v3` は、GitHub Pages へデプロイする成果物をアップロードするGitHub Actions です。
+   - `@v3` はアクションのバージョンを表しています。
+   - このアクションを利用することで、指定したパスの成果物をGitHub Pages へアップロードできます。
+
+この設定により、`frontend` ディレクトリの`build` 成果物が `gh-pages` ブランチへデプロイされ、GitHub Pages で公開されます。
 
 ## WSL2環境のセットアップ
 
@@ -115,10 +134,6 @@
    WORKDIR /usr/src/app
 
    COPY package*.json ./
-
-   # http-serverをグローバルにインストール
-   RUN npm install -g http-server
-
    RUN npm install
 
    COPY . .

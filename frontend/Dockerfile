@@ -1,9 +1,9 @@
 # ビルドステージ
-FROM node:18 as builder
+FROM node:18 AS builder
 
 WORKDIR /usr/src/app
 
-COPY package.json package-lock.json ./
+COPY package*.json ./
 RUN npm ci
 
 COPY . .
