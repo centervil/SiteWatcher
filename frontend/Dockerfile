@@ -6,8 +6,6 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 
-RUN rm -f build_timestamp.txt && date '+%Y-%m-%d %H:%M:%S' > build_timestamp.txt
-
 COPY . .
 RUN npm run build
 
