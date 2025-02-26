@@ -2,13 +2,11 @@
   "name": "sitewatcher-frontend",
   "version": "1.0.0",
   "scripts": {
-    "start": "live-server --port=3000 --watch=.",
+    "start": "http-server build --port=3000",
     "build": "rm -rf build && mkdir build && date '+%Y-%m-%d %H:%M:%S' > build_timestamp.txt && cp *.html build/ && cp *.css build/ && cp *.js build/ && cp build_timestamp.txt build/ || { echo 'Build failed'; exit 1; }"
   },
   "dependencies": {
     "http-server": "^0.12.3"
   },
-  "devDependencies": {
-    "live-server": "^1.2.2"
-  }
+  "devDependencies": {}
 }

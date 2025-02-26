@@ -18,3 +18,11 @@ h1 {
   color: #777;
   margin-left: 10px;
 }
+
+#build-timestamp-footer {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  font-size: 0.7em;
+  color: #999;
+}
