@@ -42,9 +42,28 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
 
+  zenn-deploy: # Zenn deploy job を追加
+    runs-on: ubuntu-latest
+    needs: frontend-deploy # frontend-deploy job の完了後に実行
+    steps:
+      - name: Checkout code # コードをチェックアウト
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js # Node.js をセットアップ
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18' # Zenn CLI が Node.js 環境で動作するため
+
+      - name: Install zenn-cli # zenn-cli をインストール
+        run: npm install -g zenn-cli
+
+      - name: Zenn Publish # Zenn に публикацииを実行
+        working-directory: Documents/articles # Zenn の記事があるディレクトリを指定
+        run: zenn articles publish # articles ディレクトリにある記事を публикации
+
   backend-deploy:
     runs-on: ubuntu-latest
-    needs: frontend-deploy
+    needs: zenn-deploy # zenn-deploy job の完了後に実行 (backend は zenn-deploy に依存)
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
