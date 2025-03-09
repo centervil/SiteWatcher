@@ -1,0 +1,64 @@
+{
+  "general": {
+    "indentStyle": "space",
+    "indentSize": 2,
+    "tabWidth": 2,
+    "lineEnding": "LF",
+    "encoding": "UTF-8",
+    "maxLineLength": 120
+  },
+  "frontend": {
+    "language": ["JavaScript", "HTML", "CSS"],
+    "framework": "None (VanillaJS)",
+    "packageManager": "npm",
+    "lintingTool": "ESLint",
+    "formattingTool": "Prettier"
+  },
+  "backend": {
+    "language": "JavaScript (Node.js)",
+    "runtime": "AWS Lambda",
+    "packageManager": "npm",
+    "iac": "AWS CloudFormation (or SAM)"
+  },
+  "docker": {
+    "composeVersion": "3.8",
+    "baseImage": "node:18",
+    "dockerfileLintingTool": "hadolint"
+  },
+  "git": {
+    "branchNamingConvention": "feature/issue-{id}-{short-description}",
+    "commitMessageConvention": "type(scope): description",
+    "ignoreFiles": [
+      "node_modules/",
+      ".env",
+      ".vscode/"
+    ]
+  },
+  "cicd": {
+    "ci": "GitHub Actions",
+    "testFramework": "Jest",
+    "codeCoverageTool": "nyc",
+    "buildAutomationTool": "npm scripts"
+  },
+  "cline": {
+    "autoApprove": false,
+    "customInstructions": {
+      "language": "日本語",
+      "codingStandards": {
+        "indentation": "2 spaces",
+        "maxLineLength": 120,
+        "quotes": "single",
+        "semicolons": true
+      },
+      "documentation": {
+        "language": "日本語",
+        "requireJSDoc": true,
+        "requireFileHeader": true
+      },
+      "errorHandling": {
+        "requireTryCatch": true,
+        "requireErrorLogging": true
+      }
+    }
+  }
+} 
