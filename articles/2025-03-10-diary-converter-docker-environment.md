@@ -1,5 +1,5 @@
 ---
-title: "2025-03-10 開発日記: diary_converter.pyのDocker環境構築"
+title: "2025-03-10 Docker環境で動く日記変換ツールの構築"
 emoji: "📝"
 type: "tech"
 topics: ["開発日記", "Docker", "Python", "Gemini API", "自動化"]
