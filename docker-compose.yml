@@ -35,3 +35,16 @@ services:
       - AWS_SECRET_ACCESS_KEY
       - AWS_REGION
     command: ["app.handler", "-e", "event.json"]
+
+  diary-converter:
+    build:
+      context: ./tools/diary-converter
+    volumes:
+      - ./tools/diary-converter:/app
+      - ./Documents/ProjectLogs:/app/input
+      - ./articles:/app/output
+    environment:
+      - GOOGLE_API_KEY
+    working_dir: /app
+    # コマンドは実行時に引数として渡す
+    # 例: docker-compose run diary-converter input/2025-03-10-Claude-Cursor連携開発.md output/2025-03-10-claude-cursor.md

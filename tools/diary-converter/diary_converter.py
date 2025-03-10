@@ -27,7 +27,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description="開発日記をZenn公開用に変換するツール")
     parser.add_argument("source", help="変換元の開発日記ファイルパス")
     parser.add_argument("destination", help="変換先のZenn記事ファイルパス")
-    parser.add_argument("--model", default="gemini-pro", help="使用するGeminiモデル名")
+    parser.add_argument("--model", default="gemini-2.0-flash-001", help="使用するGeminiモデル名")
     parser.add_argument("--debug", action="store_true", help="デバッグモードを有効にする")
     return parser.parse_args()
 
@@ -79,7 +79,39 @@ def convert_diary_with_gemini(content, date, model_name="gemini-pro"):
     prompt = generate_prompt(content, date)
     
     try:
-        model = genai.GenerativeModel(model_name)
+        # 最新バージョンのライブラリに対応した呼び出し方法
+        generation_config = {
+            "temperature": 0.2,
+            "top_p": 0.8,
+            "top_k": 40,
+            "max_output_tokens": 4096,
+        }
+        
+        safety_settings = [
+            {
+                "category": "HARM_CATEGORY_HARASSMENT",
+                "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+            },
+            {
+                "category": "HARM_CATEGORY_HATE_SPEECH",
+                "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+            },
+            {
+                "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+            },
+            {
+                "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+            }
+        ]
+        
+        model = genai.GenerativeModel(
+            model_name=model_name,
+            generation_config=generation_config,
+            safety_settings=safety_settings
+        )
+        
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:
@@ -124,4 +156,4 @@ def main():
     print("変換が完了しました")
 
 if __name__ == "__main__":
-    main() 
+    main()
