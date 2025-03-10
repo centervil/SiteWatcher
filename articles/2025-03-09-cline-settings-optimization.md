@@ -1,189 +1,72 @@
 ---
-title: "VSCode拡張機能Clineの設定最適化とLLMモデル選択ガイド"
+title: "2025-03-09 Cline設定最適化と最適なLLMモデルの選択"
 emoji: "⚙️"
 type: "tech"
-topics: ["vscode", "cline", "llm", "ai", "開発効率化"]
-published: true
+topics: ["VSCode", "Cline", "LLM"]
+published: false
 ---
 
-# VSCode拡張機能Clineの設定最適化とLLMモデル選択ガイド
+# Cline設定最適化と最適なLLMモデルの選択
 
-## はじめに
+## 導入（まえがき）
 
-VSCode拡張機能の「Cline」は、AIを活用したコーディング支援ツールとして注目を集めています。しかし、最適な設定や適切なLLMモデルの選択は、その効果を最大限に引き出すために重要です。本記事では、Clineの設定最適化と無料で利用可能なLLMモデルの選択について解説します。
+昨日はCline_Guide.mdとcline_auto_logging_prompt.mdの統合に取り組みました。今日は、その流れでClineを利用した開発の改善の一環として、Clineにおける設定の最適化と最適な無料利用可能なLLMモデルの選択について検討していきます。既にdeepseek-r1-zeroとdeepseek-r1を試しましたが、期待通りの結果が得られませんでした。
 
-## Clineとは
+## 検討事項（議論）
 
-Clineは、VSCode上でAIを活用したコーディング支援を行う拡張機能です。ファイルの作成・編集、コマンドの実行、ブラウザの操作など、様々な機能を提供します。ユーザーの許可を得ながら、段階的に開発を支援してくれる強力なツールです。
+Cline拡張機能で利用可能なLLMモデルには様々な選択肢があります。無料で利用できるモデルとしては、Google Gemini 2.0 FlashやDeepSeekのモデルがありますが、それぞれに長所と短所があります。
 
-## 利用可能なLLMモデル比較
+DeepSeekモデルについては、以下の問題点が確認されています：
+- DeepSeek-r1はAPIエラーが頻発する問題がある
+- DeepSeek-r1-zeroは開発テーマを勝手に決めるなど使用感が良くない
+- 大規模プロジェクトではDeepSeek + Clineの組み合わせは推奨されていない
+- 大量のコードコンテキストを持つプロジェクトではAPIリクエスト処理が著しく遅くなる可能性がある
 
-Cline拡張機能では、以下のLLMモデルが利用可能です：
+一方、Anthropic Claude 3.5-Sonnetはコーディングに最適と推奨されていますが、有料です。コスト効率と性能のバランスを考慮した選択が必要です。
 
-### 1. Anthropic Claude 3.5-Sonnet
-- **特徴**: コーディングに最適と推奨されています
-- **制限**: 有料です
-- **推奨度**: ★★★★★（コーディングタスクに最適）
+## 実行内容（実装）
 
-### 2. DeepSeek Chat
-- **特徴**: コスト効率の良い代替手段として紹介されています
-- **制限**: 大規模プロジェクトには不向き
-- **推奨度**: ★★★☆☆（中小規模プロジェクトに適している）
+Clineの設定最適化について、以下の対策を実施しました：
 
-### 3. Google Gemini 2.0 Flash
-- **特徴**: 無料で利用可能
-- **制限**: レート制限に頻繁に達する可能性があります
-- **推奨度**: ★★☆☆☆（無料で試すには良いが、本格利用には制限あり）
+1. **Auto Approve機能の無効化**：DeepSeekを使用する場合、リソース消費を減らし、複数の同時リクエストによるラグのリスクを最小限に抑えるため、この機能を無効化しました。
 
-## DeepSeekモデルの注意点
+2. **カスタム指示の設定**：VSCodeのCline拡張機能設定で「Custom Instructions」フィールドを使用して、コーディング標準、品質要件、エラー処理の設定などを指定しました。
 
-DeepSeekモデルを使用する際には、以下の点に注意が必要です：
+3. **.clinerules ファイルの作成**：プロジェクトのルートディレクトリに.clinerules ファイルを作成し、プロジェクト固有のガイドラインを追加しました。これにより、Clineの動作をプロジェクトに最適化することができました。
 
-- DeepSeek-r1はAPIエラーが頻発する問題があります
-- DeepSeek-r1-zeroは開発テーマを勝手に決めるなど使用感が良くない場合があります
-- 大規模プロジェクトではDeepSeek + Clineの組み合わせは推奨されていません
-- 大量のコードコンテキストを持つプロジェクトではAPIリクエスト処理が著しく遅くなる可能性があります
+```
+# .cursorrules - Code rules and editor settings for SiteWatcher project
 
-## Clineの設定最適化
-
-### Auto Approve機能の無効化
-
-DeepSeekを使用する場合、リソース消費を減らし、複数の同時リクエストによるラグのリスクを最小限に抑えるため、Auto Approve機能を無効化することをお勧めします。
-
-```json
-{
-  "cline": {
-    "autoApprove": false
-  }
-}
+[General]
+IndentStyle = Space
+IndentSize = 2
+TabWidth = 2
+LineEnding = LF
+Encoding = UTF-8
+MaxLineLength = 120
 ```
 
-### 修正版Clineの使用
+## 所感（考察）
 
-Roo-ClineやALineなどの修正版は、比較的短いコンテキストを持ち、リクエストをよりスムーズに処理し、キャッシュヒット率が高いため、APIコール費用の節約に役立ちます。
+Clineの設定最適化とLLMモデルの選択は、開発効率に大きく影響することを実感しました。特に、DeepSeekモデルを試した際に感じた不満点（APIエラーの頻発や開発テーマを勝手に決められる問題）は、適切な設定と最適なモデル選択の重要性を示しています。
 
-### カスタム指示の設定
+無料モデルには制限があり、完璧な選択肢はないようです。Google Gemini 2.0 Flashは無料で使えますが、レート制限に頻繁に達する可能性があります。一方、Claude 3.5-Sonnetは性能が良いものの、コストがかかります。
 
-VSCodeのCline拡張機能設定で「Custom Instructions」フィールドを使用して、コーディング標準、品質要件、エラー処理の設定などを指定できます。
+.clinerules ファイルの作成は特に効果的でした。プロジェクト固有の設定を一箇所で管理できるため、チーム全体で一貫した開発環境を維持しやすくなりました。
 
-```json
-{
-  "cline": {
-    "customInstructions": {
-      "language": "日本語",
-      "codingStandards": {
-        "indentation": "2 spaces",
-        "maxLineLength": 120,
-        "quotes": "single",
-        "semicolons": true
-      },
-      "documentation": {
-        "language": "日本語",
-        "requireJSDoc": true,
-        "requireFileHeader": true
-      },
-      "errorHandling": {
-        "requireTryCatch": true,
-        "requireErrorLogging": true
-      }
-    }
-  }
-}
-```
+## 今後の課題（展望）
 
-### .clinerules ファイルの使用
+今後の課題としては、以下の点に取り組む必要があります：
 
-プロジェクトのルートディレクトリに.clinerules ファイルを作成し、プロジェクト固有のガイドラインを追加することで、Clineの動作をカスタマイズできます。
+1. 選択したLLMモデルの実際のパフォーマンスと使用感の継続的な評価
+2. Clineのカスタム指示のさらなる最適化
+3. 大規模プロジェクトでのClineの効率的な使用方法の検討
+4. 会話ログの自動記録機能の改善
 
-以下は、.clinerules/config.jsonの例です：
+特に、無料と有料のLLMモデルのコストパフォーマンスを比較し、プロジェクトの規模や要件に応じた最適な選択を行うことが重要です。
 
-```json
-{
-  "general": {
-    "indentStyle": "space",
-    "indentSize": 2,
-    "tabWidth": 2,
-    "lineEnding": "LF",
-    "encoding": "UTF-8",
-    "maxLineLength": 120
-  },
-  "frontend": {
-    "language": ["JavaScript", "HTML", "CSS"],
-    "framework": "None (VanillaJS)",
-    "packageManager": "npm",
-    "lintingTool": "ESLint",
-    "formattingTool": "Prettier"
-  },
-  "backend": {
-    "language": "JavaScript (Node.js)",
-    "runtime": "AWS Lambda",
-    "packageManager": "npm",
-    "iac": "AWS CloudFormation (or SAM)"
-  },
-  "docker": {
-    "composeVersion": "3.8",
-    "baseImage": "node:18",
-    "dockerfileLintingTool": "hadolint"
-  },
-  "git": {
-    "branchNamingConvention": "feature/issue-{id}-{short-description}",
-    "commitMessageConvention": "type(scope): description",
-    "ignoreFiles": [
-      "node_modules/",
-      ".env",
-      ".vscode/"
-    ]
-  },
-  "cicd": {
-    "ci": "GitHub Actions",
-    "testFramework": "Jest",
-    "codeCoverageTool": "nyc",
-    "buildAutomationTool": "npm scripts"
-  },
-  "cline": {
-    "autoApprove": false,
-    "customInstructions": {
-      "language": "日本語",
-      "codingStandards": {
-        "indentation": "2 spaces",
-        "maxLineLength": 120,
-        "quotes": "single",
-        "semicolons": true
-      },
-      "documentation": {
-        "language": "日本語",
-        "requireJSDoc": true,
-        "requireFileHeader": true
-      },
-      "errorHandling": {
-        "requireTryCatch": true,
-        "requireErrorLogging": true
-      }
-    }
-  }
-}
-```
+## 結論（まとめ）
 
-## 課題と解決策
+Cline拡張機能の設定最適化と無料利用可能なLLMモデルの選択について検討しました。無料モデルとしてはGoogle Gemini 2.0 Flashが利用可能ですが、レート制限の問題があります。DeepSeekモデルはコスト効率が良いものの、大規模プロジェクトには不向きです。
 
-### 課題1: 無料で利用可能なLLMモデルの選択
-- **問題点**: DeepSeek-r1はAPIエラーが頻発し、DeepSeek-r1-zeroは開発テーマを勝手に決めるなど使用感が良くない
-- **解決策**: 
-  1. Google Gemini 2.0 Flashは無料だが、レート制限に頻繁に達する可能性がある
-  2. Claude 3.5-Sonnetはコーディングに最適だが有料
-  3. DeepSeekはコスト効率が良いが、大規模プロジェクトには不向き
-
-### 課題2: Cline拡張機能の設定最適化
-- **問題点**: デフォルト設定では最適なパフォーマンスが得られない場合がある
-- **解決策**:
-  1. Auto Approve機能を無効化してリソース消費を抑制
-  2. カスタム指示を設定して特定のコーディング標準を適用
-  3. .clinerules ファイルを使用してプロジェクト固有のガイドラインを設定
-
-## まとめ
-
-Cline拡張機能の設定最適化と無料利用可能なLLMモデルの選択について調査しました。無料モデルとしてはGoogle Gemini 2.0 Flashが利用可能ですが、レート制限の問題があります。DeepSeekモデルはコスト効率が良いものの、大規模プロジェクトには不向きです。
-
-最適なパフォーマンスを得るためには、Auto Approve機能の無効化、カスタム指示の設定、.clinerules ファイルの使用などの設定最適化が重要です。今後は選択したLLMモデルの実際のパフォーマンス評価と、Clineの設定のさらなる最適化を進めていく必要があります。
-
-Clineを活用して、より効率的な開発環境を構築しましょう！ 
+最適なパフォーマンスを得るためには、Auto Approve機能の無効化、カスタム指示の設定、.clinerules ファイルの使用などの設定最適化が重要であることがわかりました。今後も継続的に設定を見直し、開発効率の向上を図っていきたいと思います。 
