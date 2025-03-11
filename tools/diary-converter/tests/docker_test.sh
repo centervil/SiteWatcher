@@ -20,13 +20,15 @@ docker-compose build diary-converter
 # Dockerコンテナ内のパスに合わせて変更
 INPUT_FILE="tests/test_input.md"
 OUTPUT_FILE="tests/output/docker_test_output.md"
+TEMPLATE_FILE="tests/test_template.md"
 
 echo "入力ファイル: $INPUT_FILE"
 echo "出力ファイル: $OUTPUT_FILE"
+echo "テンプレートファイル: $TEMPLATE_FILE"
 
 # コンテナを実行
 echo "コンテナを実行しています..."
-docker-compose run diary-converter "$INPUT_FILE" "$OUTPUT_FILE" --debug
+docker-compose run diary-converter "$INPUT_FILE" "$OUTPUT_FILE" --debug --template "$TEMPLATE_FILE"
 
 # 出力ファイルが生成されたか確認
 if [ -f "tools/diary-converter/$OUTPUT_FILE" ]; then

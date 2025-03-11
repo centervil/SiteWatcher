@@ -13,13 +13,15 @@ fi
 # テスト用の入力ファイルと出力ファイルのパスを設定
 INPUT_FILE="test_input.md"
 OUTPUT_FILE="output/test_output.md"
+TEMPLATE_FILE="test_template.md"
 
 echo "テストを開始します..."
 echo "入力ファイル: $INPUT_FILE"
 echo "出力ファイル: $OUTPUT_FILE"
+echo "テンプレートファイル: $TEMPLATE_FILE"
 
 # diary_converter.pyを実行
-python ../diary_converter.py "$INPUT_FILE" "$OUTPUT_FILE" --debug
+python ../diary_converter.py "$INPUT_FILE" "$OUTPUT_FILE" --debug --template "$TEMPLATE_FILE"
 
 # 出力ファイルが生成されたか確認
 if [ -f "$OUTPUT_FILE" ]; then
