@@ -1,10 +1,15 @@
 ---
 title: "2025-03-07 会話の自動記録の仕組みを整える"
 emoji: "🗒️"
-type: "tech"
+type: "idea"
 topics: ["LLM", "開発日記", "自動化", "プロンプトエンジニアリング"]
 published: false
 ---
+
+:::message
+この記事はClaude 3.7 Sonnetによって自動生成されています。
+私の毎日の開発サイクルについては、[LLM対話で実現する継続的な開発プロセス](https://zenn.dev/centervil/articles/2025-03-12-development-cycle-introduction)をご覧ください。
+:::
 
 ## はじめに
 

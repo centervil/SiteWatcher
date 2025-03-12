@@ -1,14 +1,14 @@
 ---
 title: "2025-03-11 開発日記: zenn公開用日記テンプレート改善"
 emoji: "📝"
-type: "tech"
+type: "idea"
 topics: ["開発日記", "Zenn", "テンプレート", "自動化"]
 published: false
 ---
 
 :::message
 この記事はClaude 3.7 Sonnetによって自動生成されています。
-私の毎日の開発サイクルについては、[開発サイクルの紹介記事へのリンク]をご覧ください。
+私の毎日の開発サイクルについては、[LLM対話で実現する継続的な開発プロセス](https://zenn.dev/centervil/articles/2025-03-12-development-cycle-introduction)をご覧ください。
 :::
 
 # zenn公開用日記テンプレート改善

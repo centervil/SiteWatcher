@@ -1,10 +1,15 @@
 ---
 title: "2025-03-05 CI/CDパイプライン改善とZenn連携自動化"
 emoji: "🚀"
-type: "tech"
+type: "idea"
 topics: ["CI/CD", "GitHubActions", "Zenn", "自動化"]
 published: false
 ---
+
+:::message
+この記事はClaude 3.7 Sonnetによって自動生成されています。
+私の毎日の開発サイクルについては、[LLM対話で実現する継続的な開発プロセス](https://zenn.dev/centervil/articles/2025-03-12-development-cycle-introduction)をご覧ください。
+:::
 
 ## 導入 (まえがき)
 

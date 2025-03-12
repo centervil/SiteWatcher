@@ -1,10 +1,15 @@
 ---
 title: "Cline用自動記録プロンプトの統合と改善"
 emoji: "🔄"
-type: "tech" # tech: 技術記事 / idea: アイデア
+type: "idea"
 topics: ["LLM", "Cline", "開発日記", "プロンプトエンジニアリング"]
 published: false
 ---
+
+:::message
+この記事はClaude 3.7 Sonnetによって自動生成されています。
+私の毎日の開発サイクルについては、[LLM対話で実現する継続的な開発プロセス](https://zenn.dev/centervil/articles/2025-03-12-development-cycle-introduction)をご覧ください。
+:::
 
 # Cline用自動記録プロンプトの統合と改善
 

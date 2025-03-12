@@ -1,14 +1,14 @@
 ---
 title: "YYYY-MM-DD [テーマ名]"
 emoji: "絵文字"
-type: "tech"
+type: "idea"
 topics: ["トピック1", "トピック2", "トピック3"]
 published: false
 ---
 
 :::message
 この記事は[LLM Model名]によって自動生成されています。
-私の毎日の開発サイクルについては、[開発サイクルの紹介記事へのリンク]をご覧ください。
+私の毎日の開発サイクルについては、[LLM対話で実現する継続的な開発プロセス](https://zenn.dev/centervil/articles/2025-03-12-development-cycle-introduction)をご覧ください。
 :::
 
 # [テーマ名]

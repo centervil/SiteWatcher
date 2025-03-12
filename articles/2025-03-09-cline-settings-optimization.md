@@ -1,10 +1,15 @@
 ---
 title: "2025-03-09 Cline設定最適化と最適なLLMモデルの選択"
 emoji: "⚙️"
-type: "tech"
+type: "idea"
 topics: ["VSCode", "Cline", "LLM"]
 published: false
 ---
+
+:::message
+この記事はClaude 3.7 Sonnetによって自動生成されています。
+私の毎日の開発サイクルについては、[LLM対話で実現する継続的な開発プロセス](https://zenn.dev/centervil/articles/2025-03-12-development-cycle-introduction)をご覧ください。
+:::
 
 # Cline設定最適化と最適なLLMモデルの選択
 

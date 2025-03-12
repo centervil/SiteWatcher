@@ -1,10 +1,15 @@
 ---
 title: "2025-03-06 開発日記: LLM APIを活用した開発日記自動変換ツールの実装"
 emoji: "📝"
-type: "tech"
+type: "idea"
 topics: ["開発日記", "プログラミング", "Python", "GeminiAPI", "自動化"]
 published: false
 ---
+
+:::message
+この記事はClaude 3.7 Sonnetによって自動生成されています。
+私の毎日の開発サイクルについては、[LLM対話で実現する継続的な開発プロセス](https://zenn.dev/centervil/articles/2025-03-12-development-cycle-introduction)をご覧ください。
+:::
 
 # LLM APIを活用した開発日記自動変換ツールの実装
 
