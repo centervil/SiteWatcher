@@ -7,7 +7,7 @@ published: true
 ---
 
 :::message
-この記事はClaude 3.7 Sonnetによって自動生成されています。
+この記事はgemini-2.0-flash-thinking-exp-01-21によって自動生成されています。
 私の毎日の開発サイクルについては、[LLM対話で実現する継続的な開発プロセス](https://zenn.dev/centervil/articles/2025-03-12-development-cycle-introduction)をご覧ください。
 :::
 

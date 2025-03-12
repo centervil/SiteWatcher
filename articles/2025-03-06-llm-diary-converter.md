@@ -3,7 +3,7 @@ title: "2025-03-06 開発日記: LLM APIを活用した開発日記自動変換�
 emoji: "📝"
 type: "idea"
 topics: ["開発日記", "プログラミング", "Python", "GeminiAPI", "自動化"]
-published: false
+published: true
 ---
 
 :::message

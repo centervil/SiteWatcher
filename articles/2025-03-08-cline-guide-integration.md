@@ -3,7 +3,7 @@ title: "Cline用自動記録プロンプトの統合と改善"
 emoji: "🔄"
 type: "idea"
 topics: ["LLM", "Cline", "開発日記", "プロンプトエンジニアリング"]
-published: false
+published: true
 ---
 
 :::message

@@ -3,7 +3,7 @@ title: "2025-03-11 開発日記: zenn公開用日記テンプレート改善"
 emoji: "📝"
 type: "idea"
 topics: ["開発日記", "Zenn", "テンプレート", "自動化"]
-published: false
+published: true
 ---
 
 :::message
