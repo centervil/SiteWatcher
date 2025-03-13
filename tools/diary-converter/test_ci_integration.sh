@@ -68,12 +68,36 @@ if [[ "$THEME_PART" =~ [^\x00-\x7F] ]]; then
     sed 's/ツール/tool/g' | 
     sed 's/[^a-zA-Z0-9_-]/-/g') # 残りの非英数字をハイフンに変換
   
-  OUTPUT_FILENAME="${DATE_PART}-${ROMAJI_THEME}.md"
-  print_info "変換後のファイル名: $OUTPUT_FILENAME"
+  SLUG_THEME=$ROMAJI_THEME
 else
   # 既に英数字のみの場合はそのまま使用
-  OUTPUT_FILENAME="${DATE_PART}-${THEME_PART}.md"
+  SLUG_THEME=$THEME_PART
 fi
+
+# Zennのslugルールに従って調整
+# 1. 大文字を小文字に変換
+SLUG_THEME=$(echo "$SLUG_THEME" | tr '[:upper:]' '[:lower:]')
+
+# 2. 先頭に日付を追加
+SLUG="${DATE_PART}-${SLUG_THEME}"
+
+# 3. 文字数をチェック（拡張子を除いて12〜50字）
+SLUG_LENGTH=${#SLUG}
+if [ $SLUG_LENGTH -lt 12 ]; then
+  # 12文字未満の場合、接尾辞を追加
+  ADDITIONAL_CHARS=$((12 - SLUG_LENGTH))
+  SUFFIX="-zenn-article"
+  SLUG="${SLUG}${SUFFIX}"
+  print_info "slugが短すぎるため接尾辞を追加: $SLUG"
+elif [ $SLUG_LENGTH -gt 50 ]; then
+  # 50文字を超える場合、切り詰め
+  SLUG="${SLUG:0:50}"
+  print_info "slugが長すぎるため切り詰め: $SLUG"
+fi
+
+# 最終的な出力ファイル名
+OUTPUT_FILENAME="${SLUG}.md"
+print_info "Zennのslugルールに準拠したファイル名: $OUTPUT_FILENAME"
 
 print_info "処理対象: $DIARY_FILENAME"
 print_info "出力ファイル: $OUTPUT_FILENAME"
