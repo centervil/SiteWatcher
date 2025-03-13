@@ -74,16 +74,17 @@ case $TEST_METHOD in
     print_info "コンテナを実行中..."
     docker run --rm \
       -e GOOGLE_API_KEY=$GOOGLE_API_KEY \
-      -v $(pwd)/../../Documents/ProjectLogs:/app/input \
+      -v $(pwd)/../../Documents:/app/Documents \
       -v $(pwd)/../../articles:/app/output \
       diary-converter \
-      "/app/input/$DIARY_FILENAME" \
+      "/app/Documents/ProjectLogs/$DIARY_FILENAME" \
       "/app/output/$OUTPUT_FILENAME" \
-      --model gemini-2.0-flash-001
+      --model gemini-2.0-flash-001 \
+      --template "/app/Documents/zenn_template.md"
     ;;
     
   2)
-    print_info "直接実行によるテストを実行します"
+    print_info "直接実行によるテスト"
     
     # 必要なライブラリがインストールされているか確認
     if ! pip list | grep -q "google-generativeai"; then
@@ -95,7 +96,8 @@ case $TEST_METHOD in
     python diary_converter.py \
       "../../Documents/ProjectLogs/$DIARY_FILENAME" \
       "../../articles/$OUTPUT_FILENAME" \
-      --model gemini-2.0-flash-001
+      --model gemini-2.0-flash-001 \
+      --template "../../Documents/zenn_template.md"
     ;;
     
   *)
