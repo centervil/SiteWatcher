@@ -40,8 +40,40 @@ print_success "最新の開発日記ファイルを発見: $LATEST_DIARY"
 # 出力ファイル名を生成
 DIARY_FILENAME=$(basename "$LATEST_DIARY")
 DATE_PART=$(echo "$DIARY_FILENAME" | grep -oP '\d{4}-\d{2}-\d{2}')
+
+# テーマ部分を抽出し、英数字のみに変換
 THEME_PART=$(echo "$DIARY_FILENAME" | sed "s/${DATE_PART}-//g" | sed "s/.md$//g")
-OUTPUT_FILENAME="${DATE_PART}-${THEME_PART}.md"
+
+# 日本語を含むテーマをローマ字に変換
+# 一般的な日本語→ローマ字変換のマッピング
+if [[ "$THEME_PART" =~ [^\x00-\x7F] ]]; then
+  # 日本語が含まれている場合、ローマ字に変換
+  print_info "日本語テーマをローマ字に変換します: $THEME_PART"
+  
+  # 日本語→ローマ字の簡易変換（よく使われるパターンのみ）
+  ROMAJI_THEME=$(echo "$THEME_PART" | 
+    sed 's/組み込み/kumikomi/g' | 
+    sed 's/連携/renkei/g' | 
+    sed 's/開発/kaihatsu/g' | 
+    sed 's/改善/kaizen/g' | 
+    sed 's/テンプレート/template/g' | 
+    sed 's/設定/settei/g' | 
+    sed 's/最適化/saitekika/g' | 
+    sed 's/統合/tougou/g' | 
+    sed 's/自動/jidou/g' | 
+    sed 's/記録/kiroku/g' | 
+    sed 's/公開/koukai/g' | 
+    sed 's/日記/nikki/g' | 
+    sed 's/変換/henkan/g' | 
+    sed 's/ツール/tool/g' | 
+    sed 's/[^a-zA-Z0-9_-]/-/g') # 残りの非英数字をハイフンに変換
+  
+  OUTPUT_FILENAME="${DATE_PART}-${ROMAJI_THEME}.md"
+  print_info "変換後のファイル名: $OUTPUT_FILENAME"
+else
+  # 既に英数字のみの場合はそのまま使用
+  OUTPUT_FILENAME="${DATE_PART}-${THEME_PART}.md"
+fi
 
 print_info "処理対象: $DIARY_FILENAME"
 print_info "出力ファイル: $OUTPUT_FILENAME"
