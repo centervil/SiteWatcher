@@ -137,10 +137,49 @@ jobs:
             "/app/output/$OUTPUT_FILENAME" \
             --model gemini-2.0-flash-001 \
             --template "/app/Documents/zenn_template.md"
+          
+          # 生成されたファイルのパスを環境変数に保存
+          echo "GENERATED_ARTICLE_PATH=../../articles/$OUTPUT_FILENAME" >> $GITHUB_ENV
+          echo "GENERATED_ARTICLE_FILENAME=$OUTPUT_FILENAME" >> $GITHUB_ENV
+
+  zenn-push:
+    runs-on: ubuntu-latest
+    needs: diary-converter
+    steps:
+      - name: Checkout Zenn repository
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ secrets.ZENN_REPO }}
+          token: ${{ secrets.ZENN_REPO_TOKEN }}
+          path: zenn-repo
+
+      - name: Checkout main repository
+        uses: actions/checkout@v2
+        with:
+          path: main-repo
+
+      - name: Copy generated article to Zenn repository
+        run: |
+          # 生成された記事をZennリポジトリの articles ディレクトリにコピー
+          cp main-repo/articles/${{ env.GENERATED_ARTICLE_FILENAME }} zenn-repo/articles/
+          
+          # Zennリポジトリに移動
+          cd zenn-repo
+          
+          # Gitの設定
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          
+          # 変更をコミット
+          git add articles/${{ env.GENERATED_ARTICLE_FILENAME }}
+          git commit -m "Add new article: ${{ env.GENERATED_ARTICLE_FILENAME }}"
+          
+          # 変更をプッシュ
+          git push
 
   backend-deploy:
     runs-on: ubuntu-latest
-    needs: [frontend-deploy, diary-converter]
+    needs: [frontend-deploy, diary-converter, zenn-push]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
