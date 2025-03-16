@@ -284,8 +284,14 @@ def main():
         template_content
     )
     
+    # 出力先のパスを調整（/app/outputから/app/articlesへの変更に対応）
+    destination_path = args.destination
+    if "/app/output/" in destination_path:
+        destination_path = destination_path.replace("/app/output/", "/app/articles/")
+        print(f"出力先パスを調整しました: {args.destination} -> {destination_path}")
+    
     # 変換結果を保存
-    save_converted_article(converted_content, args.destination)
+    save_converted_article(converted_content, destination_path)
     
     print("変換が完了しました")
 

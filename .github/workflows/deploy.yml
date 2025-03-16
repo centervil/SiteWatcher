@@ -127,20 +127,33 @@ jobs:
           # Dockerイメージをビルド
           docker build -t diary-converter .
           
+          # articlesディレクトリが存在するか確認
+          if [ ! -d "../../articles" ]; then
+            echo "articlesディレクトリが存在しないため作成します"
+            mkdir -p ../../articles
+          fi
+          
           # コンテナを実行
           docker run --rm \
             -e GOOGLE_API_KEY=$GOOGLE_API_KEY \
             -v $(pwd)/../../Documents:/app/Documents \
-            -v $(pwd)/../../articles:/app/output \
+            -v $(pwd)/../../articles:/app/articles \
             diary-converter \
             "/app/Documents/ProjectLogs/$DIARY_FILENAME" \
-            "/app/output/$OUTPUT_FILENAME" \
+            "/app/articles/$OUTPUT_FILENAME" \
             --model gemini-2.0-flash-001 \
             --template "/app/Documents/zenn_template.md" \
             --debug
           
+          # 生成されたファイルが存在するか確認
+          if [ -f "../../articles/$OUTPUT_FILENAME" ]; then
+            echo "生成されたファイルが存在します: ../../articles/$OUTPUT_FILENAME"
+          else
+            echo "警告: 生成されたファイルが見つかりません: ../../articles/$OUTPUT_FILENAME"
+          fi
+          
           # 生成されたファイルのパスを環境変数に保存
-          echo "GENERATED_ARTICLE_PATH=../../articles/$OUTPUT_FILENAME" >> $GITHUB_ENV
+          echo "GENERATED_ARTICLE_PATH=articles/$OUTPUT_FILENAME" >> $GITHUB_ENV
           echo "GENERATED_ARTICLE_FILENAME=$OUTPUT_FILENAME" >> $GITHUB_ENV
 
   zenn-push:
@@ -161,8 +174,44 @@ jobs:
 
       - name: Copy generated article to Zenn repository
         run: |
-          # 生成された記事をZennリポジトリの articles ディレクトリにコピー
-          cp main-repo/articles/${{ env.GENERATED_ARTICLE_FILENAME }} zenn-repo/articles/
+          # 環境変数の確認
+          echo "GENERATED_ARTICLE_FILENAME: ${{ env.GENERATED_ARTICLE_FILENAME }}"
+          
+          # articlesディレクトリの存在確認
+          if [ ! -d "main-repo/articles" ]; then
+            echo "エラー: main-repo/articles ディレクトリが存在しません"
+            mkdir -p main-repo/articles
+            echo "main-repo/articles ディレクトリを作成しました"
+          fi
+          
+          # Zennリポジトリのarticlesディレクトリの存在確認
+          if [ ! -d "zenn-repo/articles" ]; then
+            echo "zenn-repo/articles ディレクトリが存在しないため作成します"
+            mkdir -p zenn-repo/articles
+          fi
+          
+          # ファイルの存在確認
+          if [ -f "main-repo/articles/${{ env.GENERATED_ARTICLE_FILENAME }}" ]; then
+            echo "ファイルが見つかりました: main-repo/articles/${{ env.GENERATED_ARTICLE_FILENAME }}"
+            cp main-repo/articles/${{ env.GENERATED_ARTICLE_FILENAME }} zenn-repo/articles/
+          else
+            echo "エラー: ファイルが見つかりません: main-repo/articles/${{ env.GENERATED_ARTICLE_FILENAME }}"
+            echo "ディレクトリ内容を確認します:"
+            ls -la main-repo/articles/ || echo "ディレクトリが存在しません"
+            
+            echo "代替方法: 最新のmdファイルを検索してコピーします"
+            LATEST_ARTICLE=$(find main-repo/articles -type f -name "*.md" | sort -r | head -n 1 || echo "")
+            
+            if [ -n "$LATEST_ARTICLE" ]; then
+              echo "最新の記事ファイルを発見: $LATEST_ARTICLE"
+              ARTICLE_FILENAME=$(basename "$LATEST_ARTICLE")
+              cp "$LATEST_ARTICLE" "zenn-repo/articles/$ARTICLE_FILENAME"
+              echo "GENERATED_ARTICLE_FILENAME=$ARTICLE_FILENAME" >> $GITHUB_ENV
+            else
+              echo "エラー: 記事ファイルが見つかりません"
+              exit 1
+            fi
+          fi
           
           # Zennリポジトリに移動
           cd zenn-repo
