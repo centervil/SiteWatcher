@@ -46,6 +46,32 @@ def read_source_diary(file_path):
 def read_template(template_path):
     """テンプレートファイルを読み込む"""
     try:
+        # テンプレートファイルの存在確認
+        if not os.path.exists(template_path):
+            print(f"エラー: テンプレートファイル '{template_path}' が見つかりません")
+            print(f"カレントディレクトリ: {os.getcwd()}")
+            print(f"ディレクトリ内容:")
+            
+            # テンプレートファイルのディレクトリを確認
+            template_dir = os.path.dirname(template_path)
+            if os.path.exists(template_dir):
+                print(f"{template_dir} の内容:")
+                for item in os.listdir(template_dir):
+                    print(f"  - {item}")
+            else:
+                print(f"ディレクトリ '{template_dir}' が見つかりません")
+                
+                # 親ディレクトリを確認
+                parent_dir = os.path.dirname(template_dir)
+                if os.path.exists(parent_dir):
+                    print(f"{parent_dir} の内容:")
+                    for item in os.listdir(parent_dir):
+                        print(f"  - {item}")
+                else:
+                    print(f"親ディレクトリ '{parent_dir}' も見つかりません")
+            
+            sys.exit(1)
+            
         with open(template_path, 'r', encoding='utf-8') as file:
             content = file.read()
         return content
@@ -77,15 +103,54 @@ def generate_prompt(content, date, theme, model_name, cycle_article_link="", tem
         print("エラー: テンプレート内容が提供されていません")
         sys.exit(1)
         
+    # テンプレートからfrontmatterを抽出
+    template_fm = None
+    try:
+        # frontmatterライブラリを使用してfrontmatterを抽出
+        post = frontmatter.loads(template_content)
+        template_fm = post.metadata
+        
+        if not template_fm:
+            print("警告: テンプレートからfrontmatterを抽出できませんでした。デフォルト値を使用します。")
+            template_fm = {
+                "title": f"{date} [テーマ名]",
+                "emoji": "📝",
+                "type": "tech",
+                "topics": ["開発日記", "プログラミング"],
+                "published": False
+            }
+        else:
+            print(f"テンプレートからfrontmatterを抽出しました: {template_fm}")
+    except Exception as e:
+        print(f"警告: テンプレートからfrontmatterを抽出できませんでした: {e}")
+        template_fm = {
+            "title": f"{date} [テーマ名]",
+            "emoji": "📝",
+            "type": "tech",
+            "topics": ["開発日記", "プログラミング"],
+            "published": False
+        }
+    
     # テンプレートの記述ガイドラインを抽出
     guidelines_match = re.search(r'## 記述ガイドライン.*', template_content, re.DOTALL)
     guidelines = guidelines_match.group(0) if guidelines_match else ""
+    
+    # テンプレートの構造を抽出（frontmatterとガイドライン部分を除く）
+    template_structure = template_content
+    if guidelines_match:
+        template_structure = template_content.split(guidelines_match.group(0))[0]
+    
+    # frontmatterを除去
+    template_structure = re.sub(r'^---\n.*?\n---\n', '', template_structure, flags=re.DOTALL)
     
     # LLMモデル名と開発サイクル紹介記事のリンクを設定
     llm_model_info = f"この記事は{model_name}によって自動生成されています。"
     cycle_article_info = ""
     if cycle_article_link:
         cycle_article_info = f"私の毎日の開発サイクルについては、{cycle_article_link}をご覧ください。"
+    
+    # テーマ名を設定
+    theme_name = theme.replace("-", " ").title()
     
     prompt = f"""
 以下の開発日記を、Zenn公開用の記事に変換してください。
@@ -99,36 +164,33 @@ def generate_prompt(content, date, theme, model_name, cycle_article_link="", tem
 3. 「所感」セクションを充実させ、開発者の視点や感想を追加してください
 4. マークダウン形式を維持し、コードブロックなどは適切に整形してください
 5. 以下のfrontmatterを記事の先頭に追加してください：
-   - title: "{date} 開発日記: {theme}"
-   - emoji: "📝"
-   - type: "tech"
-   - topics: ["開発日記", "プログラミング"]
-   - published: false
+   ```
+   ---
+   title: "{date} {theme_name}"
+   emoji: "{template_fm.get('emoji', '📝')}"
+   type: "{template_fm.get('type', 'tech')}"
+   topics: {template_fm.get('topics', ['開発日記', 'プログラミング'])}
+   published: {str(template_fm.get('published', False)).lower()}
+   ---
+   ```
 6. 記事の冒頭（タイトルの直後）に以下のメッセージボックスを追加してください：
+   ```
    :::message
    {llm_model_info}
    {cycle_article_info}
    :::
+   ```
 
-# テンプレート構成
-以下のセクション構成に従って記事を作成してください：
-- はじめに
-- 背景と目的
-- 検討内容
-  - 課題の整理
-  - 解決アプローチ
-- 実装内容
-  - 変更点ごとの詳細
-- 技術的なポイント
-- 所感
-- 今後の課題
-- まとめ
+# テンプレート構造
+以下のテンプレート構造に従って記事を作成してください。各セクションの目的と内容を理解し、開発日記の内容に合わせて適切に変換してください：
+
+{template_structure}
 
 # 記述ガイドライン
 {guidelines}
 
 # 出力形式
-frontmatterを含むマークダウン形式の完全な記事を出力してください。
+frontmatterを含むマークダウン形式の完全な記事を出力してください。テンプレートの構造に従いつつ、開発日記の内容を適切に反映させてください。
 """
     return prompt
 

@@ -124,19 +124,20 @@ case $TEST_METHOD in
       exit 1
     fi
     
-    print_info "Dockerイメージをビルド中..."
+    print_info "Dockerを使用してdiary-converterを実行中..."
     docker build -t diary-converter .
     
     print_info "コンテナを実行中..."
     docker run --rm \
       -e GOOGLE_API_KEY=$GOOGLE_API_KEY \
       -v $(pwd)/../../Documents:/app/Documents \
-      -v $(pwd)/../../articles:/app/output \
+      -v $(pwd)/output:/app/output \
       diary-converter \
       "/app/Documents/ProjectLogs/$DIARY_FILENAME" \
       "/app/output/$OUTPUT_FILENAME" \
       --model gemini-2.0-flash-001 \
-      --template "/app/Documents/zenn_template.md"
+      --template "/app/Documents/zenn_template.md" \
+      --debug
     ;;
     
   2)
