@@ -161,7 +161,7 @@ jobs:
           echo "GENERATED_ARTICLE_FILENAME=$OUTPUT_FILENAME" >> $GITHUB_ENV
 
       - name: Upload article artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: zenn-article
           path: tools/diary-converter/artifact
@@ -178,7 +178,7 @@ jobs:
           path: zenn-repo
 
       - name: Download article artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: zenn-article
           path: article
