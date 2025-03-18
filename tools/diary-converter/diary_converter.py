@@ -152,8 +152,22 @@ def generate_prompt(content, date, theme, model_name, cycle_article_link="", tem
     # テーマ名を設定
     theme_name = theme.replace("-", " ").title()
     
-    prompt = f"""
-以下の開発日記を、Zenn公開用の記事に変換してください。
+    # frontmatterテンプレート
+    frontmatter_template = f"""---
+title: "{date} {theme_name}"
+emoji: "{template_fm.get('emoji', '📝')}"
+type: "{template_fm.get('type', 'tech')}"
+topics: {template_fm.get('topics', ['開発日記', 'プログラミング'])}
+published: {str(template_fm.get('published', False)).lower()}
+---"""
+
+    # メッセージボックステンプレート
+    message_box_template = f""":::message
+{llm_model_info}
+{cycle_article_info}
+:::"""
+    
+    prompt = f"""以下の開発日記を、Zenn公開用の記事に変換してください。
 
 # 入力された開発日記
 {content}
@@ -163,23 +177,13 @@ def generate_prompt(content, date, theme, model_name, cycle_article_link="", tem
 2. 技術的な内容は保持しつつ、読みやすく整理してください
 3. 「所感」セクションを充実させ、開発者の視点や感想を追加してください
 4. マークダウン形式を維持し、コードブロックなどは適切に整形してください
-5. 以下のfrontmatterを記事の先頭に追加してください：
-   ```
-   ---
-   title: "{date} {theme_name}"
-   emoji: "{template_fm.get('emoji', '📝')}"
-   type: "{template_fm.get('type', 'tech')}"
-   topics: {template_fm.get('topics', ['開発日記', 'プログラミング'])}
-   published: {str(template_fm.get('published', False)).lower()}
-   ---
-   ```
-6. 記事の冒頭（タイトルの直後）に以下のメッセージボックスを追加してください：
-   ```
-   :::message
-   {llm_model_info}
-   {cycle_article_info}
-   :::
-   ```
+5. 記事の先頭に以下のfrontmatterを追加してください：
+
+{frontmatter_template}
+
+6. frontmatterの直後に以下のメッセージボックスを追加してください：
+
+{message_box_template}
 
 # テンプレート構造
 以下のテンプレート構造に従って記事を作成してください。各セクションの目的と内容を理解し、開発日記の内容に合わせて適切に変換してください：
@@ -190,7 +194,7 @@ def generate_prompt(content, date, theme, model_name, cycle_article_link="", tem
 {guidelines}
 
 # 出力形式
-frontmatterを含むマークダウン形式の完全な記事を出力してください。テンプレートの構造に従いつつ、開発日記の内容を適切に反映させてください。
+frontmatterを含むマークダウン形式の完全な記事を出力してください。テンプレートの構造に従いつつ、開発日記の内容を適切に反映させてください。コードブロックは必要な場合のみ使用し、記事全体をコードブロックで囲まないでください。
 """
     return prompt
 
