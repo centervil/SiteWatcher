@@ -29,7 +29,7 @@ def parse_arguments():
     parser.add_argument("destination", help="変換先のZenn記事ファイルパス")
     parser.add_argument("--model", default="gemini-2.0-flash-001", help="使用するGeminiモデル名")
     parser.add_argument("--debug", action="store_true", help="デバッグモードを有効にする")
-    parser.add_argument("--template", default="Documents/zenn_template.md", help="使用するテンプレートファイルのパス")
+    parser.add_argument("--template", default="./templates/zenn_template.md", help="使用するテンプレートファイルのパス")
     parser.add_argument("--cycle-article", default="", help="開発サイクルの紹介記事へのリンク")
     return parser.parse_args()
 
@@ -46,10 +46,17 @@ def read_source_diary(file_path):
 def read_template(template_path):
     """テンプレートファイルを読み込む"""
     try:
+        # 相対パスを解決
+        if not os.path.isabs(template_path):
+            # スクリプトの実行ディレクトリからの相対パス
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            template_path = os.path.join(script_dir, template_path)
+        
         # テンプレートファイルの存在確認
         if not os.path.exists(template_path):
             print(f"エラー: テンプレートファイル '{template_path}' が見つかりません")
             print(f"カレントディレクトリ: {os.getcwd()}")
+            print(f"スクリプトディレクトリ: {os.path.dirname(os.path.abspath(__file__))}")
             print(f"ディレクトリ内容:")
             
             # テンプレートファイルのディレクトリを確認
@@ -322,14 +329,8 @@ def main():
         template_content
     )
     
-    # 出力先のパスを調整（/app/outputから/app/articlesへの変更に対応）
-    destination_path = args.destination
-    if "/app/output/" in destination_path:
-        destination_path = destination_path.replace("/app/output/", "/app/articles/")
-        print(f"出力先パスを調整しました: {args.destination} -> {destination_path}")
-    
     # 変換結果を保存
-    save_converted_article(converted_content, destination_path)
+    save_converted_article(converted_content, args.destination)
     
     print("変換が完了しました")
 

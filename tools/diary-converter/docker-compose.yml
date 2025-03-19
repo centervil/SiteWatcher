@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  diary-converter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: diary-converter
+    volumes:
+      - ./input:/app/input
+      - ./output:/app/output
+      - ./templates:/app/templates
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    entrypoint: ["/app/docker-entrypoint.sh"] 
