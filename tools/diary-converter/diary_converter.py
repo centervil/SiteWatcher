@@ -194,7 +194,11 @@ published: {str(template_fm.get('published', False)).lower()}
 {guidelines}
 
 # 出力形式
-frontmatterを含むマークダウン形式の完全な記事を出力してください。テンプレートの構造に従いつつ、開発日記の内容を適切に反映させてください。コードブロックは必要な場合のみ使用し、記事全体をコードブロックで囲まないでください。
+frontmatterを含むマークダウン形式の完全な記事を出力してください。テンプレートの構造に従いつつ、開発日記の内容を適切に反映させてください。
+以下の点に注意してください：
+1. コードブロックは必要な場合のみ使用し、記事全体をコードブロックで囲まないでください
+2. 記事の先頭や末尾に余分なコードブロックマーカー（```）を付けないでください
+3. 記事の先頭に```markdownなどの言語指定を付けないでください
 """
     return prompt
 
@@ -237,7 +241,17 @@ def convert_diary_with_gemini(content, date, theme, model_name, cycle_article_li
         )
         
         response = model.generate_content(prompt)
-        return response.text
+        
+        # 余分なコードブロックマーカーを削除
+        converted_text = response.text.strip()
+        if converted_text.startswith("```markdown"):
+            converted_text = converted_text[len("```markdown"):].strip()
+        elif converted_text.startswith("```"):
+            converted_text = converted_text[3:].strip()
+        if converted_text.endswith("```"):
+            converted_text = converted_text[:-3].strip()
+            
+        return converted_text
     except Exception as e:
         print(f"エラー: Gemini API呼び出し中にエラーが発生しました: {e}")
         sys.exit(1)
@@ -246,13 +260,33 @@ def save_converted_article(content, file_path):
     """変換された記事を保存する"""
     try:
         # 出力先ディレクトリが存在しない場合は作成
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        output_dir = os.path.dirname(file_path)
+        print(f"出力先ディレクトリ: {output_dir}")
+        print(f"出力先ディレクトリの存在確認: {os.path.exists(output_dir)}")
         
+        if not os.path.exists(output_dir):
+            print(f"出力先ディレクトリを作成します: {output_dir}")
+            os.makedirs(output_dir, exist_ok=True)
+            print(f"出力先ディレクトリの作成完了: {os.path.exists(output_dir)}")
+        
+        print(f"ファイルを保存します: {file_path}")
         with open(file_path, 'w', encoding='utf-8') as file:
             file.write(content)
         print(f"変換された記事を {file_path} に保存しました")
+        
+        # ファイルの存在確認
+        if os.path.exists(file_path):
+            print(f"ファイルの保存を確認しました: {file_path}")
+            print(f"ファイルサイズ: {os.path.getsize(file_path)} bytes")
+        else:
+            print(f"警告: ファイルが保存されていません: {file_path}")
+            
     except Exception as e:
         print(f"エラー: ファイル保存中にエラーが発生しました: {e}")
+        print(f"エラーの詳細: {str(e)}")
+        print(f"現在の作業ディレクトリ: {os.getcwd()}")
+        print(f"出力先パス: {file_path}")
+        print(f"出力先ディレクトリの存在: {os.path.exists(os.path.dirname(file_path))}")
         sys.exit(1)
 
 def main():

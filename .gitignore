@@ -19,3 +19,4 @@ build/
 coverage/
 temp/
 frontend/build_timestamp.txt
+articles/

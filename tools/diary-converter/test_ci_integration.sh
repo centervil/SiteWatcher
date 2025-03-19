@@ -131,10 +131,10 @@ case $TEST_METHOD in
     docker run --rm \
       -e GOOGLE_API_KEY=$GOOGLE_API_KEY \
       -v $(pwd)/../../Documents:/app/Documents \
-      -v $(pwd)/output:/app/output \
+      -v $(pwd)/../../articles:/app/articles \
       diary-converter \
       "/app/Documents/ProjectLogs/$DIARY_FILENAME" \
-      "/app/output/$OUTPUT_FILENAME" \
+      "/app/articles/$OUTPUT_FILENAME" \
       --model gemini-2.0-flash-001 \
       --template "/app/Documents/zenn_template.md" \
       --debug
