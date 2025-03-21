@@ -49,16 +49,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Build and run diary-converter
-        working-directory: tools/diary-converter
-        env:
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+      - name: Find latest diary file
+        id: find-diary
         run: |
           # 最新の開発日記ファイルを検索
-          LATEST_DIARY=$(find ../../Documents/ProjectLogs -type f -name "*.md" | sort -r | head -n 1)
+          LATEST_DIARY=$(find Documents/ProjectLogs -type f -name "*.md" | sort -r | head -n 1)
           
           # 出力ファイル名を生成
           DIARY_FILENAME=$(basename "$LATEST_DIARY")
@@ -124,47 +119,44 @@ jobs:
           echo "処理対象: $LATEST_DIARY"
           echo "出力ファイル: $OUTPUT_FILENAME"
           
-          # Dockerイメージをビルド
-          docker build -t diary-converter .
-          
           # articlesディレクトリが存在するか確認
-          if [ ! -d "../../articles" ]; then
+          if [ ! -d "articles" ]; then
             echo "articlesディレクトリが存在しないため作成します"
-            mkdir -p ../../articles
+            mkdir -p articles
           fi
           
-          # コンテナを実行
-          docker run --rm \
-            -e GOOGLE_API_KEY=$GOOGLE_API_KEY \
-            -v $(pwd)/../../Documents:/app/Documents \
-            -v $(pwd)/../../articles:/app/articles \
-            diary-converter \
-            "/app/Documents/ProjectLogs/$DIARY_FILENAME" \
-            "/app/articles/$OUTPUT_FILENAME" \
-            --model gemini-2.0-flash-001 \
-            --template "/app/Documents/zenn_template.md" \
-            --debug
-          
-          # 生成されたファイルが存在するか確認
-          if [ -f "../../articles/$OUTPUT_FILENAME" ]; then
-            echo "生成されたファイルが存在します: ../../articles/$OUTPUT_FILENAME"
-            # アーティファクトとしてファイルを保存
-            mkdir -p artifact
-            cp "../../articles/$OUTPUT_FILENAME" artifact/
-          else
-            echo "警告: 生成されたファイルが見つかりません: ../../articles/$OUTPUT_FILENAME"
-            exit 1
-          fi
-          
-          # 生成されたファイルのパスを環境変数に保存
+          # 環境変数を設定
+          echo "diary_file=$LATEST_DIARY" >> $GITHUB_OUTPUT
+          echo "output_file=articles/$OUTPUT_FILENAME" >> $GITHUB_OUTPUT
           echo "GENERATED_ARTICLE_PATH=articles/$OUTPUT_FILENAME" >> $GITHUB_ENV
           echo "GENERATED_ARTICLE_FILENAME=$OUTPUT_FILENAME" >> $GITHUB_ENV
+
+      - name: Run diary-converter
+        uses: centervil/Diary-Converter@main
+        with:
+          source_file: ${{ steps.find-diary.outputs.diary_file }}
+          destination_file: ${{ steps.find-diary.outputs.output_file }}
+          api_key: ${{ secrets.GOOGLE_API_KEY }}
+          model: gemini-2.0-flash-001
+          template: Documents/zenn_template.md
+          debug: 'true'
+
+      - name: Prepare artifact
+        run: |
+          mkdir -p artifact
+          if [ -f "${{ steps.find-diary.outputs.output_file }}" ]; then
+            cp "${{ steps.find-diary.outputs.output_file }}" artifact/
+            echo "ファイルをアーティファクトとして保存: ${{ steps.find-diary.outputs.output_file }}"
+          else
+            echo "警告: 生成されたファイルが見つかりません: ${{ steps.find-diary.outputs.output_file }}"
+            exit 1
+          fi
 
       - name: Upload article artifact
         uses: actions/upload-artifact@v4
         with:
           name: zenn-article
-          path: tools/diary-converter/artifact
+          path: artifact
 
   zenn-push:
     runs-on: ubuntu-latest
